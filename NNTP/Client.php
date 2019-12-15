@@ -1362,7 +1362,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function count()
     {
-        return $this->_selectedGroupSummary['count'];
+        return $this->_selectedGroupSummary['count'] ?? null;
     }
 
     // }}}
@@ -1386,7 +1386,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function last()
     {
-    	return $this->_selectedGroupSummary['last'];
+    	return $this->_selectedGroupSummary['last'] ?? null;
     }
 
     // }}}
@@ -1410,7 +1410,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function first()
     {
-    	return $this->_selectedGroupSummary['first'];
+    	return $this->_selectedGroupSummary['first'] ?? null;
     }
 
     // }}}
@@ -1434,7 +1434,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function group()
     {
-    	return $this->_selectedGroupSummary['group'];
+    	return $this->_selectedGroupSummary['group'] ?? null;
     }
 
     // }}}
