@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3CÂ® SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,7 +61,7 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3CÂ® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
  * @see        
@@ -1362,7 +1362,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function count()
     {
-        return $this->_selectedGroupSummary['count'];
+        return isset($this->_selectedGroupSummary['count']) ? $this->_selectedGroupSummary['count'] : null;
     }
 
     // }}}
@@ -1386,7 +1386,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function last()
     {
-    	return $this->_selectedGroupSummary['last'];
+    	return isset($this->_selectedGroupSummary['last']) ? $this->_selectedGroupSummary['last'] : null;
     }
 
     // }}}
@@ -1410,7 +1410,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function first()
     {
-    	return $this->_selectedGroupSummary['first'];
+    	return isset($this->_selectedGroupSummary['first']) ? $this->_selectedGroupSummary['first'] : null;
     }
 
     // }}}
@@ -1434,7 +1434,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     function group()
     {
-    	return $this->_selectedGroupSummary['group'];
+    	return isset($this->_selectedGroupSummary['group']) ? $this->_selectedGroupSummary['group'] : null;
     }
 
     // }}}
