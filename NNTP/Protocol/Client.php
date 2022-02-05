@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3CÂ® SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,7 +61,7 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3CÂ® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
  * @see
@@ -1650,7 +1650,8 @@ class Net_NNTP_Protocol_Client extends PEAR
     	    	    $group = array('group'   => $arr[0],
     	    	                   'last'    => $arr[1],
     	    	                   'first'   => $arr[2],
-    	    	                   'posting' => $arr[3]);
+    	    	                   //'posting' => $arr[3]
+				  );
 
     	    	    $groups[$group['group']] = $group;
     	    	}
