@@ -126,7 +126,7 @@ require_once __DIR__.'/Responsecode.php';
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @version    package: @package_version@ (@package_state@)
  * @version    api: @api_version@ (@api_state@)
- * @access     private
+ * @access     protected
  * @see        Net_NNTP_Client
  */
 class Net_NNTP_Protocol_Client extends PEAR
@@ -137,33 +137,33 @@ class Net_NNTP_Protocol_Client extends PEAR
      * The socket resource being used to connect to the NNTP server.
      *
      * @var resource
-     * @access private
+     * @access protected
      */
-    private $_socket = null;
+    protected $_socket = null;
 
     /**
      * Contains the last recieved status response code and text
      *
      * @var array
-     * @access private
+     * @access protected
      */
-    private $_currentStatusResponse = null;
+    protected $_currentStatusResponse = null;
 
     /**
      *
      *
      * @var     object
-     * @access  private
+     * @access  protected
      */
-    private $_logger = null;
+    protected $_logger = null;
 
     /**
     * Contains false on non-ssl connection and string when encrypted
     *
     * @var     mixed
-    * @access  private
+    * @access  protected
     */
-    private $_encryption = null;
+    protected $_encryption = null;
 
     // }}}
     // {{{ constructor
@@ -263,9 +263,9 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @param  string  $cmd The command to launch, ie: "ARTICLE 1004853"
      *
      * @return mixed (int) response code on success or (object) pear_error on failure
-     * @access private
+     * @access protected
      */
-    private function _sendCommand(string $cmd): mixed
+    protected function _sendCommand(string $cmd): mixed
     {
         // NNTP/RFC977 only allows command up to 512 (-2) chars.
         if (!strlen($cmd) > 510) {
@@ -317,9 +317,9 @@ class Net_NNTP_Protocol_Client extends PEAR
      * Get servers status response after a command.
      *
      * @return mixed (int) statuscode on success or (object) pear_error on failure
-     * @access private
+     * @access protected
      */
-    private function _getStatusResponse(): mixed
+    protected function _getStatusResponse(): mixed
     {
     	// Retrieve a line (terminated by "\r\n") from the server.
         // RFC says max is 510, but IETF says "be liberal in what you accept"...
@@ -365,9 +365,9 @@ class Net_NNTP_Protocol_Client extends PEAR
      * Get data until a line with only a '.' in it is read and return data.
      *
      * @return mixed (array) text response on success or (object) pear_error on failure
-     * @access private
+     * @access protected
      */
-    private function _getTextResponse(): mixed
+    protected function _getTextResponse(): mixed
     {
         $data = array();
         $line = '';
@@ -460,9 +460,9 @@ class Net_NNTP_Protocol_Client extends PEAR
     /**
      *
      *
-     * @access private
+     * @access protected
      */
-    private function _sendArticle($article): void
+    protected function _sendArticle($article): void
     {
     	/* data should be in the format specified by RFC850 */
 
@@ -539,9 +539,9 @@ class Net_NNTP_Protocol_Client extends PEAR
      *
      *
      * @return string status text
-     * @access private
+     * @access protected
      */
-    private function _currentStatusResponse(): string
+    protected function _currentStatusResponse(): string
     {
     	return $this->_currentStatusResponse[1];
     }
@@ -556,9 +556,9 @@ class Net_NNTP_Protocol_Client extends PEAR
      * @param  string|null  $text Status text
      *
      * @return mixed
-     * @access private
+     * @access protected
      */
-    private function _handleUnexpectedResponse(?int $code = null, ?string $text = null)
+    protected function _handleUnexpectedResponse(?int $code = null, ?string $text = null)
     {
     	if ($code === null) {
     	    $code = $this->_currentStatusResponse[0];
