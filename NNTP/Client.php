@@ -99,7 +99,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @var array
      * @access private
      */
-    private ?array $_selectedGroupSummary = null;
+    protected ?array $_selectedGroupSummary = null;
 
     /**
      * 
@@ -108,7 +108,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @access private
      * @since 1.3.0
      */
-    private ?array $_overviewFormatCache = null;
+    protected ?array $_overviewFormatCache = null;
 
     // }}}
     // {{{ constructor
