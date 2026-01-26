@@ -1,3 +1,14 @@
+Release v2.1.0
+----------------
+- PHP 8.5 compatibility update
+- Removed deprecated PHP4-style constructors (Net_NNTP_Client() and Net_NNTP_Protocol_Client())
+- Replaced deprecated E_USER_ERROR in trigger_error() calls with InvalidArgumentException
+- Removed outdated PHP version checks (5.1.0 and 5.2.11)
+- Updated minimum PHP version requirement to 8.5
+
+(Released: 2026-01-26)
+
+
 Release v1.5.2
 ----------------
 - Fix bug #20941 (PR #2 @ GitHub): "Clear openssl error messages before and after fgets calls" (thanks @zrtq) (@heino)

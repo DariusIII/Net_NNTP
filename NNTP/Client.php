@@ -4,7 +4,7 @@
 /**
  * 
  * 
- * PHP versions 8.2 and above
+ * PHP versions 8.5 and above
  *
  * <pre>
  * +-----------------------------------------------------------------------+
@@ -124,10 +124,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function __construct()
     {
     	parent::__construct();
-    }
-    public function Net_NNTP_Client()
-    {
-    	$this->__construct();
     }
 
     // }}}
@@ -762,12 +758,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	break;
     	    case is_string($time):
     	    	$time = strtotime($time);
-    	    	if ($time === false || ($time === -1 && version_compare(phpversion(), '5.1.0', '<'))) {
+    	    	if ($time === false) {
     	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
     	    	}
     	    	break;
     	    default:
-    	    	trigger_error('$time must be either a string or an integer/timestamp!', E_USER_ERROR);
+    	    	throw new \InvalidArgumentException('$time must be either a string or an integer/timestamp!');
     	}
 
     	return $this->cmdNewgroups($time, $distributions);
@@ -804,13 +800,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    	break;
     	    case is_string($time):
     	    	$time = strtotime($time);
-				if ($time === false || ($time === -1 && version_compare(phpversion(), '5.1.0', '<'))) {
+				if ($time === false) {
 
     	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
 		}
     	    	break;
     	    default:
-    	    	trigger_error('$time must be either a string or an integer/timestamp!', E_USER_ERROR);
+    	    	throw new \InvalidArgumentException('$time must be either a string or an integer/timestamp!');
     	}
 
     	return $this->cmdNewnews($time, $groups, $distribution);

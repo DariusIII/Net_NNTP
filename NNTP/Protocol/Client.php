@@ -4,7 +4,7 @@
 /**
  *
  *
- * PHP versions 8.2 and above
+ * PHP versions 8.5 and above
  *
  * <pre>
  * +-----------------------------------------------------------------------+
@@ -66,11 +66,6 @@
  * @link       http://pear.php.net/package/Net_NNTP
  * @see
  */
-
-// Warn about PHP bugs
-if (version_compare(PHP_VERSION, '5.2.11') === true) {
-    trigger_error('PHP bug #16657 breaks feof() on socket streams! Connection consistency might be compromised!', E_USER_WARNING);
-}
 
 /**
  *
@@ -178,10 +173,6 @@ class Net_NNTP_Protocol_Client extends PEAR
     	// Call PEAR constructor
     	parent::__construct();
     }
-    public function Net_NNTP_Protocol_Client()
-	{
-		$this->__construct();
-	}
     // }}}
     // {{{ getPackageVersion()
 
@@ -625,7 +616,7 @@ class Net_NNTP_Protocol_Client extends PEAR
 	        $this->_encryption = $encryption;
 		break;
 	    default:
-    	    	trigger_error('$encryption parameter must be either tcp, tls or ssl.', E_USER_ERROR);
+    	    	throw new \InvalidArgumentException('$encryption parameter must be either tcp, tls or ssl.');
     	}
 
     	//

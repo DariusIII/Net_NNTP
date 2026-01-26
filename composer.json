@@ -1,5 +1,6 @@
 {
     "name": "pear/net_nntp",
+    "version": "2.1.0",
     "description": "PEAR's package for communication with NNTP/Usenet servers.",
 	"homepage": "http://pear.php.net/package/Net_NNTP",
     "license": "W3C",
@@ -21,7 +22,7 @@
         ]
     },
     "require": {
-		"php": ">=8.2",
+		"php": ">=8.5",
         "pear/pear": "^1.4.5"
     },
     "require-dev": {
