@@ -1,5 +1,5 @@
 $groups = $nntp->getGroups('*.pear.*');
-if (PEAR::isError($groupsummary)) {
+if (Net_NNTP_Error::isError($groupsummary)) {
     // handle error
 }
 
