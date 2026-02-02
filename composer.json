@@ -1,6 +1,5 @@
 {
     "name": "dariusiii/net_nntp",
-    "version": "3.0",
     "description": "Package for communication with NNTP/Usenet servers.",
 	"homepage": "https://github.com/DariusIII/Net_NNTP",
     "license": "W3C",
