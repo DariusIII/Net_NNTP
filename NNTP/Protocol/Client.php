@@ -255,13 +255,16 @@ class Net_NNTP_Protocol_Client
     */
     public function _clearOpensslErrors(): void
     {
-        if (isset($this->_encryption)) {
-            while ($message = openssl_error_string()) {
-				//
-				if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
-					$this->_logger->debug('OpenSSL: ' . $message);
-				}				
-			};
+        if (!isset($this->_encryption)) {
+            return;
+        }
+
+        $debug = $this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG);
+
+        while (($message = openssl_error_string()) !== false) {
+            if ($debug) {
+                $this->_logger->debug('OpenSSL: ' . $message);
+            }
         }
     }
 
@@ -282,7 +285,7 @@ class Net_NNTP_Protocol_Client
     protected function _sendCommand(string $cmd): mixed
     {
         // NNTP/RFC977 only allows command up to 512 (-2) chars.
-        if (!strlen($cmd) > 510) {
+        if (strlen($cmd) > 510) {
             return $this->throwError('Failed writing to socket! (Command to long - max 510 chars)');
         }
 
@@ -296,11 +299,11 @@ class Net_NNTP_Protocol_Client
         // Net_NNTP does not support pipelined commands. Inserting a new line charecter
         // allows sending multiple commands and thereby making the communication between
         // NET_NNTP and the server out of sync...
-        if (preg_match_all('/\r?\n/', $cmd, $matches, PREG_PATTERN_ORDER)) {
-            foreach ($matches[0] as $key => $match) {
-                $this->_logger->debug("Illegal character in command: ".htmlentities(str_replace(["\r", "\n"],
-		                ["'Carriage Return'", "'New Line'"], $match), ENT_QUOTES | ENT_HTML5));
+        if (strpbrk($cmd, "\r\n") !== false) {
+            if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+                $this->_logger->debug('Illegal character in command: contains carriage return/new line');
             }
+
             return $this->throwError("Illegal character(s) in NNTP command!");
         }
 
@@ -310,8 +313,8 @@ class Net_NNTP_Protocol_Client
         }
 
     	// Send the command
-    	$R = @fwrite($this->_socket, $cmd . "\r\n");
-        if ($R === false) {
+    	$written = @fwrite($this->_socket, $cmd . "\r\n");
+        if ($written === false) {
             return $this->throwError('Failed to write to socket!');
         }
 
@@ -392,9 +395,9 @@ class Net_NNTP_Protocol_Client
         // Continue until connection is lost
         while (!feof($this->_socket)) {
 
-            // Retrieve and append up to 1024 characters from the server.
+            // Retrieve and append a larger chunk to reduce read-loop overhead.
             $this->_clearOpensslErrors();
-            $recieved = @fgets($this->_socket, 1024);
+            $recieved = @fgets($this->_socket, 8192);
             $this->_clearOpensslErrors();
 
             if ($recieved === false) {
@@ -414,11 +417,6 @@ class Net_NNTP_Protocol_Client
 
             // Continue if the line is not terminated by CRLF
             if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
-				
-				// 
-                usleep(25000);
-
-                // 
                 continue;
             }
 
@@ -446,7 +444,7 @@ class Net_NNTP_Protocol_Client
             }
 
             // If 1st char is '.' it's doubled (NNTP/RFC977 2.4.1)
-            if (substr($line, 0, 2) == '..') {
+            if (isset($line[1]) && $line[0] === '.' && $line[1] === '.') {
                 $line = substr($line, 1);
             }
 
@@ -1710,16 +1708,16 @@ class Net_NNTP_Protocol_Client
             return $response;
         }
 
-    	switch ($response) {
-    	    case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
-    	    	$data = $this->_getTextResponse();
-    	        if (Net_NNTP_Error::isError($data)) {
-    	            return $data;
-    	        }
+	    switch ($response) {
+	        case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
+	    	    $data = $this->_getTextResponse();
+	            if (Net_NNTP_Error::isError($data)) {
+	                return $data;
+	            }
 
-    	        foreach ($data as $key => $value) {
-    	            $data[$key] = explode("\t", trim($value));
-    	        }
+	            foreach ($data as $key => $value) {
+	                $data[$key] = explode("\t", $value);
+	            }
 		        
 		        $this->_logger?->info('Fetched overview '.($range === null ? 'for current article' : 'for range: '.$range));
 
@@ -1774,16 +1772,16 @@ class Net_NNTP_Protocol_Client
             return $response;
         }
 
-    	switch ($response) {
-    	    case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
-    	    	$data = $this->_getTextResponse();
-    	        if (Net_NNTP_Error::isError($data)) {
-    	            return $data;
-    	        }
+	    switch ($response) {
+	        case NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS: // 224, RFC2980: 'Overview information follows'
+	    	    $data = $this->_getTextResponse();
+	            if (Net_NNTP_Error::isError($data)) {
+	                return $data;
+	            }
 
-    	        foreach ($data as $key => $value) {
-    	            $data[$key] = explode("\t", trim($value));
-    	        }
+	            foreach ($data as $key => $value) {
+	                $data[$key] = explode("\t", $value);
+	            }
 
     	    	if ($this->_logger) {
     	    	    $this->_logger->info('Fetched overview ' . ($range === null ? 'for current article' : 'for range: '.$range));
@@ -2186,4 +2184,3 @@ class Net_NNTP_Protocol_Client
  * c-hanging-comment-ender-p: nil
  * End:
  */
-

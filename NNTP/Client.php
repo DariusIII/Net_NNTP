@@ -997,8 +997,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    return $overview;
     	}
 
-    	// Use field names from overview format as keys?
-    	if ($_names) {
+	    // Use field names from overview format as keys?
+	    if ($_names) {
 
     	    // Already cached?
     	    if (is_null($this->_overviewFormatCache)) {
@@ -1019,31 +1019,30 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        $format = $this->_overviewFormatCache;
     	    }
 
-    	    // Loop through all articles
+	    	// Loop through all articles
+            $fieldNames = array_keys($format);
+            $fieldFlags = array_values($format);
+            $fieldCount = count($fieldNames);
+
             foreach ($overview as $key => $article) {
+                $mappedArticle = array();
 
-    	        // Copy $format
-    	        $f = $format;
+                for ($i = 0; $i < $fieldCount; $i++) {
+                    $value = $article[$i] ?? '';
 
-    	        // Field counter
-    	        $i = 0;
-		
-		// Loop through forld names in format
-    	        foreach ($f as $tag => $full) {
+                    // If prefixed by field name, remove it
+                    if ($fieldFlags[$i] === true) {
+                        $pos = strpos($value, ':');
+                        $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
+                    }
 
-    	    	    //
-    	            $f[$tag] = $article[$i++];
+                    $mappedArticle[$fieldNames[$i]] = $value;
+                }
 
-    	            // If prefixed by field name, remove it
-    	            if ($full === true) {
-	                $f[$tag] = ltrim( substr($f[$tag], strpos($f[$tag], ':') + 1), " \t");
-    	            }
-    	        }
-
-    	        // Replace article 
-	        $overview[$key] = $f;
-    	    }
-    	}
+                // Replace article
+                $overview[$key] = $mappedArticle;
+            }
+	    }
 
     	//
     	switch (true) {
