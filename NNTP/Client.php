@@ -152,7 +152,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function connect(?string $host = null, mixed $encryption = null, ?int $port = null, ?int $timeout = null): mixed
     {
     	// v1.0.x API
-    	if (is_int($encryption)) {
+    	if (\is_int($encryption)) {
 	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: connect() !', E_USER_NOTICE);
     	    $port = $encryption;
 	    $encryption = null;
@@ -435,7 +435,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getArticle(mixed $article = null, bool $implode = false): mixed
     {
     	// v1.1.x API
-    	if (is_string($implode)) {
+    	if (\is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
@@ -494,7 +494,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getHeader(mixed $article = null, bool $implode = false): mixed
     {
     	// v1.1.x API
-    	if (is_string($implode)) {
+    	if (\is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
@@ -553,7 +553,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getBody(mixed $article = null, bool $implode = false)
     {
     	// v1.1.x API
-    	if (is_string($implode)) {
+    	if (\is_string($implode)) {
     	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
@@ -605,23 +605,23 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function post(mixed $article): mixed
     {
     	// API v1.0
-    	if (func_num_args() >= 4) {
+    	if (\func_num_args() >= 4) {
 
     	    // 
     	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: post() !', E_USER_NOTICE);
 
     	    //
-    	    $groups = func_get_arg(0);
-    	    $subject = func_get_arg(1);
-    	    $body = func_get_arg(2);
-    	    $from = func_get_arg(3);
-    	    $additional = func_get_arg(4);
+    	    $groups = \func_get_arg(0);
+    	    $subject = \func_get_arg(1);
+    	    $body = \func_get_arg(2);
+    	    $from = \func_get_arg(3);
+    	    $additional = \func_get_arg(4);
 
     	    return $this->mail($groups, $subject, $body, "From: $from\r\n" . $additional);
     	}
 
     	// Only accept $article if array or string
-    	if (!is_array($article) && !is_string($article)) {
+    	if (!\is_array($article) && !\is_string($article)) {
     	    return $this->throwError('Ups', null, 0);
     	}
 
@@ -633,7 +633,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 
     	// Get article data from callback function
     	if (is_callable($article)) {
-    	    $article = call_user_func($article);
+    	    $article = \call_user_func($article);
     	}
 
     	// Actually send the article
@@ -754,9 +754,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getNewGroups(mixed $time, ?string $distributions = null): mixed
     {
     	switch (true) {
-    	    case is_integer($time):
-    	    	break;
-    	    case is_string($time):
+case \is_integer($time):
+	    	break;
+    	    case \is_string($time):
     	    	$time = strtotime($time);
     	    	if ($time === false) {
     	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
@@ -796,9 +796,9 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getNewArticles(mixed $time, string $groups = '*', ?string $distribution = null)
     {
     	switch (true) {
-    	    case is_integer($time):
-    	    	break;
-    	    case is_string($time):
+case \is_integer($time):
+	    	break;
+    	    case \is_string($time):
     	    	$time = strtotime($time);
 				if ($time === false) {
 
@@ -852,7 +852,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if ($backup === true) {
 
     	    // 
-    	    if (!is_null($wildmat)) {
+    	    if (!\is_null($wildmat)) {
     	    	return $this->throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
     	    }
 	    
@@ -898,7 +898,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function getDescriptions(mixed $wildmat = null): mixed
     {
-    	if (is_array($wildmat)) {
+    	if (\is_array($wildmat)) {
 	    $wildmat = implode(',', $wildmat);
     	}
 
@@ -962,10 +962,10 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	// API v1.0
     	switch (true) {
 	    // API v1.3
-	    case func_num_args() != 2:
-	    case is_bool(func_get_arg(1)):
-	    case !is_int(func_get_arg(1)) || (is_string(func_get_arg(1)) && ctype_digit(func_get_arg(1))):
-	    case !is_int(func_get_arg(0)) || (is_string(func_get_arg(0)) && ctype_digit(func_get_arg(0))):
+	    case \func_num_args() != 2:
+	    case \is_bool(\func_get_arg(1)):
+	    case !\is_int(\func_get_arg(1)) || (\is_string(\func_get_arg(1)) && ctype_digit(\func_get_arg(1))):
+	    case !\is_int(\func_get_arg(0)) || (\is_string(\func_get_arg(0)) && ctype_digit(\func_get_arg(0))):
 		break;
 
 	    default:
@@ -973,7 +973,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getOverview() !', E_USER_NOTICE);
 
     	        // Fetch overview via API v1.3
-    	        $overview = $this->getOverview(func_get_arg(0) . '-' . func_get_arg(1), true, false);
+    	        $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
     	        if (Net_NNTP_Error::isError($overview)) {
     	            return $overview;
     	        }
@@ -997,11 +997,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    return $overview;
     	}
 
-    	// Use field names from overview format as keys?
-    	if ($_names) {
+	    // Use field names from overview format as keys?
+	    if ($_names) {
 
     	    // Already cached?
-    	    if (is_null($this->_overviewFormatCache)) {
+    	    if (\is_null($this->_overviewFormatCache)) {
     	    	// Fetch overview format
     	        $format = $this->getOverviewFormat($_forceNames, true);
     	        if (Net_NNTP_Error::isError($format)){
@@ -1019,41 +1019,40 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	        $format = $this->_overviewFormatCache;
     	    }
 
-    	    // Loop through all articles
+	    	// Loop through all articles
+            $fieldNames = array_keys($format);
+            $fieldFlags = array_values($format);
+            $fieldCount = \count($fieldNames);
+
             foreach ($overview as $key => $article) {
+                $mappedArticle = array();
 
-    	        // Copy $format
-    	        $f = $format;
+                for ($i = 0; $i < $fieldCount; $i++) {
+                    $value = $article[$i] ?? '';
 
-    	        // Field counter
-    	        $i = 0;
-		
-		// Loop through forld names in format
-    	        foreach ($f as $tag => $full) {
+                    // If prefixed by field name, remove it
+                    if ($fieldFlags[$i] === true) {
+                        $pos = strpos($value, ':');
+                        $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
+                    }
 
-    	    	    //
-    	            $f[$tag] = $article[$i++];
+                    $mappedArticle[$fieldNames[$i]] = $value;
+                }
 
-    	            // If prefixed by field name, remove it
-    	            if ($full === true) {
-	                $f[$tag] = ltrim( substr($f[$tag], strpos($f[$tag], ':') + 1), " \t");
-    	            }
-    	        }
-
-    	        // Replace article 
-	        $overview[$key] = $f;
-    	    }
-    	}
+                // Replace article
+                $overview[$key] = $mappedArticle;
+            }
+	    }
 
     	//
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range):
-    	    case is_int($range):
-            case is_string($range) && ctype_digit($range):
-    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-    	        if (count($overview) === 0) {
+    	    case \is_null($range):
+    	    case \is_int($range):
+            case \is_string($range) && ctype_digit($range):
+    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+    	        if (\count($overview) === 0) {
     	    	    return false;
     	    	}
 		    
@@ -1153,12 +1152,12 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range):
-    	    case is_int($range):
-            case is_string($range) && ctype_digit($range):
-    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+    	    case \is_null($range):
+    	    case \is_int($range):
+            case \is_string($range) && ctype_digit($range):
+    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
 
-    	        if (count($fields) === 0) {
+    	        if (\count($fields) === 0) {
     	    	    return false;
     	    	}
 		    
@@ -1261,7 +1260,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    }
     	}
 
-    	if (true && (is_array($references) && count($references) === 0)) {
+    	if (true && (\is_array($references) && \count($references) === 0)) {
     	    $backup = true;
     	}
 
@@ -1278,7 +1277,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	    return $references;
     	}
 
-    	if (is_array($references)) {
+    	if (\is_array($references)) {
     	    foreach ($references as $key => $val) {
     	        $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
     	    }
@@ -1288,11 +1287,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	switch (true) {
 
     	    // Expect one article
-    	    case is_null($range):
-    	    case is_int($range):
-    	    case is_string($range) && ctype_digit($range):
-    	    case is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-    	        if (count($references) === 0) {
+    	    case \is_null($range):
+    	    case \is_int($range):
+    	    case \is_string($range) && ctype_digit($range):
+    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
+    	        if (\count($references) === 0) {
     	    	    return false;
     	    	}
 		    
