@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+ini_set('memory_limit', '1024M');
+
 require_once __DIR__ . '/../NNTP/Client.php';
 
 /**
@@ -26,11 +28,6 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
     public function fetchXoverRaw(string $range): mixed
     {
         return $this->cmdXOver($range);
-    }
-
-    public function fetchOverRaw(string $range): mixed
-    {
-        return $this->cmdOver($range);
     }
 
     public function fetchXoverUsingLegacyReader(string $range): mixed
@@ -159,7 +156,6 @@ function parseOptions(): array
         'range:',
         'iterations::',
         'timeout::',
-        'include-over::',
         'include-legacy-reader::',
         'help::',
     ]);
@@ -174,7 +170,6 @@ function parseOptions(): array
         'range' => $opts['range'] ?? getenv('NNTP_RANGE') ?: null,
         'iterations' => max(1, (int) ($opts['iterations'] ?? getenv('NNTP_ITERATIONS') ?: 3)),
         'timeout' => max(1, (int) ($opts['timeout'] ?? getenv('NNTP_TIMEOUT') ?: 15)),
-        'includeOver' => array_key_exists('include-over', $opts),
         'includeLegacyReader' => array_key_exists('include-legacy-reader', $opts),
         'help' => array_key_exists('help', $opts),
     ];
@@ -191,7 +186,7 @@ Usage:
 Required:
   --host                 NNTP host (or NNTP_HOST env)
   --group                Newsgroup to select (or NNTP_GROUP env)
-  --range                Article range for OVER/XOVER, e.g. 100000-100250 (or NNTP_RANGE env)
+  --range                Article range for XOVER, e.g. 100000-100250 (or NNTP_RANGE env)
 
 Options:
   --port=PORT            NNTP port (default: 119, or NNTP_PORT)
@@ -200,7 +195,6 @@ Options:
   --pass=PASS            Password (or NNTP_PASS)
   --iterations=N         Iterations per benchmark (default: 3, or NNTP_ITERATIONS)
   --timeout=SECONDS      Connect timeout in seconds (default: 15, or NNTP_TIMEOUT)
-  --include-over         Benchmark OVER path in addition to XOVER
   --include-legacy-reader Benchmark XOVER using the legacy text-reader implementation
   --help                 Show this message
 TXT;
@@ -377,14 +371,6 @@ try {
         }
     );
 
-    if ($options['includeOver']) {
-        $results[] = runBenchmark(
-            'OVER raw',
-            $iterations,
-            fn (): mixed => $client->fetchOverRaw($range)
-        );
-    }
-
     if ($options['includeLegacyReader']) {
         $results[] = runBenchmark(
             'XOVER using legacy reader',
@@ -423,4 +409,3 @@ try {
 } finally {
     $client->disconnect();
 }
-
