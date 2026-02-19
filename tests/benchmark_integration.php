@@ -77,7 +77,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
     {
         $fieldNames = array_keys($format);
         $fieldFlags = array_values($format);
-        $fieldCount = count($fieldNames);
+        $fieldCount = \count($fieldNames);
 
         foreach ($overview as $key => $article) {
             $mappedArticle = array();
@@ -118,7 +118,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
 
             $line .= $received;
 
-            if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
+            if (substr($line, -2) != "\r\n" || \strlen($line) < 2) {
                 usleep(25000);
                 continue;
             }
@@ -170,8 +170,8 @@ function parseOptions(): array
         'range' => $opts['range'] ?? getenv('NNTP_RANGE') ?: null,
         'iterations' => max(1, (int) ($opts['iterations'] ?? getenv('NNTP_ITERATIONS') ?: 3)),
         'timeout' => max(1, (int) ($opts['timeout'] ?? getenv('NNTP_TIMEOUT') ?: 15)),
-        'includeLegacyReader' => array_key_exists('include-legacy-reader', $opts),
-        'help' => array_key_exists('help', $opts),
+        'includeLegacyReader' => \array_key_exists('include-legacy-reader', $opts),
+        'help' => \array_key_exists('help', $opts),
     ];
 
     return $values;
@@ -208,7 +208,7 @@ TXT;
 function median(array $values): float
 {
     sort($values);
-    $count = count($values);
+    $count = \count($values);
 
     if ($count === 0) {
         return 0.0;
@@ -242,8 +242,8 @@ function runBenchmark(string $name, int $iterations, callable $callback): array
             throw new RuntimeException($name . ' failed: ' . $result->getMessage() . ' [' . $result->getCode() . ']');
         }
 
-        if (is_array($result)) {
-            $rows = count($result);
+        if (\is_array($result)) {
+            $rows = \count($result);
         }
     }
 
@@ -254,7 +254,7 @@ function runBenchmark(string $name, int $iterations, callable $callback): array
         'median_ms' => median($times),
         'min_ms' => min($times),
         'max_ms' => max($times),
-        'avg_ms' => array_sum($times) / count($times),
+        'avg_ms' => array_sum($times) / \count($times),
     ];
 }
 

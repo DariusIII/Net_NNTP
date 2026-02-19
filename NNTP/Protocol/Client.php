@@ -76,7 +76,7 @@ require_once __DIR__.'/Responsecode.php';
 /**
  * Log level constant for debug messages (compatible with PEAR_LOG_DEBUG)
  */
-if (!defined('PEAR_LOG_DEBUG')) {
+if (!\defined('PEAR_LOG_DEBUG')) {
     define('PEAR_LOG_DEBUG', 7);
 }
 
@@ -285,7 +285,7 @@ class Net_NNTP_Protocol_Client
     protected function _sendCommand(string $cmd): mixed
     {
         // NNTP/RFC977 only allows command up to 512 (-2) chars.
-        if (strlen($cmd) > 510) {
+        if (\strlen($cmd) > 510) {
             return $this->throwError('Failed writing to socket! (Command to long - max 510 chars)');
         }
 
@@ -416,14 +416,14 @@ class Net_NNTP_Protocol_Client
             $line .= $recieved;
 
             // Continue if the line is not terminated by CRLF
-            if (substr($line, -2) != "\r\n" || strlen($line) < 2) {
+            if (substr($line, -2) != "\r\n" || \strlen($line) < 2) {
                 continue;
             }
 
             // Validate recieved line
             if (false) {
                 // Lines should/may not be longer than 998+2 chars (RFC2822 2.3)
-                if (strlen($line) > 1000) {
+                if (\strlen($line) > 1000) {
     	    	    if ($this->_logger) {
     	    	    	$this->_logger->notice('Max line length...');
     	    	    }
@@ -479,7 +479,7 @@ class Net_NNTP_Protocol_Client
     	/* data should be in the format specified by RFC850 */
 
     	switch (true) {
-    	case is_string($article):
+    	case \is_string($article):
     	    //
     	    @fwrite($this->_socket, preg_replace("|\n\.|", "\n.." , $article));
     	    @fwrite($this->_socket, "\r\n.\r\n");
@@ -493,14 +493,14 @@ class Net_NNTP_Protocol_Client
     	    }
 	    break;
 
-    	case is_array($article):
+    	case \is_array($article):
     	    //
     	    $header = reset($article);
     	    $body = next($article);
 
 /* Experimental...
     	    // If header is an array, implode it.
-    	    if (is_array($header)) {
+    	    if (\is_array($header)) {
     	        $header = implode("\r\n", $header) . "\r\n";
     	    }
 */
@@ -519,7 +519,7 @@ class Net_NNTP_Protocol_Client
 
 /* Experimental...
     	    // If body is an array, implode it.
-    	    if (is_array($body)) {
+    	    if (\is_array($body)) {
     	        $header = implode("\r\n", $body) . "\r\n";
     	    }
 */
@@ -612,14 +612,14 @@ class Net_NNTP_Protocol_Client
     	}
 
     	// v1.0.x API
-    	if (is_int($encryption)) {
+    	if (\is_int($encryption)) {
 	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: connect() !', E_USER_NOTICE);
     	    $port = $encryption;
 	    $encryption = false;
     	}
 
     	//
-    	if (is_null($host)) {
+    	if (\is_null($host)) {
     	    $host = 'localhost';
     	}
 
@@ -628,12 +628,12 @@ class Net_NNTP_Protocol_Client
 	    case null:
 	    case false:
 		$transport = 'tcp';
-    	    	$port = is_null($port) ? 119 : $port;
+    	    	$port = \is_null($port) ? 119 : $port;
 		break;
 	    case 'ssl':
 	    case 'tls':
 		$transport = $encryption;
-    	    	$port = is_null($port) ? 563 : $port;
+    	    	$port = \is_null($port) ? 563 : $port;
 	        $this->_encryption = $encryption;
 		break;
 	    default:
@@ -641,7 +641,7 @@ class Net_NNTP_Protocol_Client
     	}
 
     	//
-    	if (is_null($timeout)) {
+    	if (\is_null($timeout)) {
     	    $timeout = 15;
     	}
 
@@ -844,7 +844,7 @@ class Net_NNTP_Protocol_Client
     	    	    	$this->_logger?->info('TLS encryption failed.');
     	    	    	return $this->throwError('Could not initiate TLS negotiation', $response, $this->_currentStatusResponse());
     	    	    	break;
-    	    	    case is_int($encrypted):
+    	    	    case \is_int($encrypted):
     	    	    	return $this->throwError('', $response, $this->_currentStatusResponse());
     	    	    	break;
     	    	    default:
@@ -915,10 +915,10 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdListgroup(?string $newsgroup = null, mixed $range = null): mixed
     {
-        if (is_null($newsgroup)) {
+        if (\is_null($newsgroup)) {
     	    $command = 'LISTGROUP';
     	} else {
-    	    if (is_null($range)) {
+    	    if (\is_null($range)) {
     	        $command = 'LISTGROUP ' . $newsgroup;
     	    } else {
     	        $command = 'LISTGROUP ' . $newsgroup . ' ' . $range;
@@ -1062,7 +1062,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdArticle(mixed $article = null): mixed
     {
-        if (is_null($article)) {
+        if (\is_null($article)) {
     	    $command = 'ARTICLE';
     	} else {
             $command = 'ARTICLE ' . $article;
@@ -1116,7 +1116,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdHead(mixed $article = null): mixed
     {
-        if (is_null($article)) {
+        if (\is_null($article)) {
     	    $command = 'HEAD';
     	} else {
             $command = 'HEAD ' . $article;
@@ -1169,7 +1169,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdBody(mixed $article = null): mixed
     {
-        if (is_null($article)) {
+        if (\is_null($article)) {
     	    $command = 'BODY';
     	} else {
             $command = 'BODY ' . $article;
@@ -1222,7 +1222,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdStat(mixed $article = null): mixed
     {
-        if (is_null($article)) {
+        if (\is_null($article)) {
     	    $command = 'STAT';
     	} else {
             $command = 'STAT ' . $article;
@@ -1449,7 +1449,7 @@ class Net_NNTP_Protocol_Client
     {
 	$date = gmdate('ymd His', $time);
 
-        if (is_null($distributions)) {
+        if (\is_null($distributions)) {
     	    $command = 'NEWGROUPS ' . $date . ' GMT';
     	} else {
     	    $command = 'NEWGROUPS ' . $date . ' GMT <' . $distributions . '>';
@@ -1500,14 +1500,14 @@ class Net_NNTP_Protocol_Client
     {
         $date = gmdate('ymd His', $time);
 
-    	if (is_array($newsgroups)) {
+    	if (\is_array($newsgroups)) {
     	    $newsgroups = implode(',', $newsgroups);
     	}
 
-        if (is_null($distribution)) {
+        if (\is_null($distribution)) {
     	    $command = 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT';
     	} else {
-    	    if (is_array($distribution)) {
+    	    if (\is_array($distribution)) {
     		$distribution = implode(',', $distribution);
     	    }
 
@@ -1588,7 +1588,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdListActive(?string $wildmat = null): mixed
     {
-        if (is_null($wildmat)) {
+        if (\is_null($wildmat)) {
     	    $command = 'LIST ACTIVE';
     	} else {
             $command = 'LIST ACTIVE ' . $wildmat;
@@ -1638,7 +1638,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdListNewsgroups(?string $wildmat = null): mixed
     {
-        if (is_null($wildmat)) {
+        if (\is_null($wildmat)) {
     	    $command = 'LIST NEWSGROUPS';
     	} else {
             $command = 'LIST NEWSGROUPS ' . $wildmat;
@@ -1697,7 +1697,7 @@ class Net_NNTP_Protocol_Client
 	 */
     protected function cmdOver(?string $range = null): mixed
     {
-        if (is_null($range)) {
+        if (\is_null($range)) {
 	    $command = 'OVER';
     	} else {
     	    $command = 'OVER ' . $range;
@@ -1757,11 +1757,11 @@ class Net_NNTP_Protocol_Client
     protected function cmdXOver(?string $range = null): mixed
     {
 	// deprecated API (the code _is_ still in alpha state)
-    	if (func_num_args() > 1 ) {
+    	if (\func_num_args() > 1 ) {
     	    die('The second parameter in cmdXOver() has been deprecated! Use x-y instead...');
         }
 
-        if (is_null($range)) {
+        if (\is_null($range)) {
 	    $command = 'XOVER';
     	} else {
     	    $command = 'XOVER ' . $range;
@@ -1868,7 +1868,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdXHdr(string $field, ?string $range = null): mixed
     {
-        if (is_null($range)) {
+        if (\is_null($range)) {
 	    $command = 'XHDR ' . $field;
     	} else {
     	    $command = 'XHDR ' . $field . ' ' . $range;
@@ -1969,11 +1969,11 @@ class Net_NNTP_Protocol_Client
     protected function cmdXROver(?string $range = null): mixed
     {
 	// Warn about deprecated API (the code _is_ still in alpha state)
-    	if (func_num_args() > 1 ) {
+    	if (\func_num_args() > 1 ) {
     	    die('The second parameter in cmdXROver() has been deprecated! Use x-y instead...');
     	}
 
-        if (is_null($range)) {
+        if (\is_null($range)) {
     	    $command = 'XROVER';
     	} else {
     	    $command = 'XROVER ' . $range;
@@ -2031,7 +2031,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function cmdXPat(string $field, string $range, mixed $wildmat): mixed
     {
-        if (is_array($wildmat)) {
+        if (\is_array($wildmat)) {
 	    $wildmat = implode(' ', $wildmat);
     	}
 
@@ -2168,7 +2168,7 @@ class Net_NNTP_Protocol_Client
      */
     protected function _isConnected(): bool
     {
-        return (is_resource($this->_socket) && (!feof($this->_socket)));
+        return (\is_resource($this->_socket) && (!feof($this->_socket)));
     }
 
     // }}}

@@ -108,7 +108,7 @@ class Net_NNTP_Error
      */
     public function __toString(): string
     {
-        $str = get_class($this) . ': ' . $this->message;
+        $str = \get_class($this) . ': ' . $this->message;
         if ($this->code !== null) {
             $str .= ' (code: ' . $this->code . ')';
         }
