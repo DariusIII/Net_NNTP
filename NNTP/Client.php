@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C� SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,7 +61,7 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C� SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
  * @see        
@@ -69,11 +69,7 @@
  * @filesource
  */
 
-/**
- *
- */
-require_once __DIR__.'/Protocol/Client.php';
-
+// Loaded via Composer autoload (classmap). Parent and protocol classes are resolved by the autoloader.
 
 // {{{ Net_NNTP_Client
 
@@ -96,15 +92,13 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     /**
      * Information summary about the currently selected group.
      *
-     * @var array
+     * @var array|null
      * @access private
      */
     protected ?array $_selectedGroupSummary = null;
 
     /**
-     * 
-     *
-     * @var array
+     * @var array|null
      * @access private
      * @since 1.3.0
      */
@@ -219,7 +213,6 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 */
     public function authenticate(?string $user, string $pass): mixed
     {
-        // Username is a must...
         if ($user === null) {
             return $this->throwError('No username supplied', null);
         }
@@ -259,27 +252,21 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function selectGroup(string $group, mixed $articles = false): mixed
     {
-	// Select group (even if $articles is set, since many servers does not select groups when the listgroup command is run)
     	$summary = $this->cmdGroup($group);
     	if (Net_NNTP_Error::isError($summary)) {
     	    return $summary;
     	}
 
-    	// Store group info in the object
     	$this->_selectedGroupSummary = $summary;
 
-	// 
     	if ($articles !== false) {
     	    $summary2 = $this->cmdListgroup($group, ($articles === true ? null : $articles));
     	    if (Net_NNTP_Error::isError($summary2)) {
     	        return $summary2;
     	    }
 
-	    // Make sure the summary array is correct...
     	    if ($summary2['group'] === $group) {
     	    	$summary = $summary2;
-
-	    // ... even if server does not include summary in status reponce.
     	    } else {
     	    	$summary['articles'] = $summary2['articles'];
     	    }
@@ -434,33 +421,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function getArticle(mixed $article = null, bool $implode = false): mixed
     {
-    	// v1.1.x API
-    	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
         $data = $this->cmdArticle($article);
         if (Net_NNTP_Error::isError($data)) {
     	    return $data;
     	}
 
-    	if ($implode === true) {
+    	if ($implode) {
     	    $data = implode("\r\n", $data);
     	}
 
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
     	return $data;
     }
 
@@ -493,33 +462,15 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function getHeader(mixed $article = null, bool $implode = false): mixed
     {
-    	// v1.1.x API
-    	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
         $data = $this->cmdHead($article);
         if (Net_NNTP_Error::isError($data)) {
     	    return $data;
     	}
 
-    	if ($implode === true) {
+    	if ($implode) {
     	    $data = implode("\r\n", $data);
     	}
 
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
     	return $data;
     }
 
@@ -550,35 +501,17 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      * @see Net_NNTP_Client::getHeader()
      * @see Net_NNTP_Client::getArticle()
      */
-    public function getBody(mixed $article = null, bool $implode = false)
+    public function getBody(mixed $article = null, bool $implode = false): mixed
     {
-    	// v1.1.x API
-    	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
-		     
-    	    $class = $implode;
-    	    $implode = false;
-
-    	    if (!class_exists($class)) {
-    	        return $this->throwError("Class '$class' does not exist!");
-	    }
-    	}
-
         $data = $this->cmdBody($article);
         if (Net_NNTP_Error::isError($data)) {
     	    return $data;
     	}
 
-    	if ($implode === true) {
+    	if ($implode) {
     	    $data = implode("\r\n", $data);
     	}
 
-    	// v1.1.x API
-    	if (isset($class)) {
-    	    return $obj = new $class($data);
-    	}
-
-    	//
     	return $data;
     }
 
@@ -604,39 +537,19 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function post(mixed $article): mixed
     {
-    	// API v1.0
-    	if (\func_num_args() >= 4) {
-
-    	    // 
-    	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: post() !', E_USER_NOTICE);
-
-    	    //
-    	    $groups = \func_get_arg(0);
-    	    $subject = \func_get_arg(1);
-    	    $body = \func_get_arg(2);
-    	    $from = \func_get_arg(3);
-    	    $additional = \func_get_arg(4);
-
-    	    return $this->mail($groups, $subject, $body, "From: $from\r\n" . $additional);
-    	}
-
-    	// Only accept $article if array or string
-    	if (!\is_array($article) && !\is_string($article)) {
+    	if (!\is_array($article) && !\is_string($article) && !is_callable($article)) {
     	    return $this->throwError('Ups', null, 0);
     	}
 
-    	// Check if server will receive an article
     	$post = $this->cmdPost();
     	if (Net_NNTP_Error::isError($post)) {
     	    return $post;
     	}
 
-    	// Get article data from callback function
     	if (is_callable($article)) {
     	    $article = \call_user_func($article);
     	}
 
-    	// Actually send the article
     	return $this->cmdPost2($article);
     }
 
@@ -669,13 +582,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      */
     public function mail(string $groups, string $subject, string $body, ?string $additional = null): mixed
     {
-    	// Check if server will receive an article
     	$post = $this->cmdPost();
         if (Net_NNTP_Error::isError($post)) {
     	    return $post;
     	}
 
-        // Construct header
         $header  = "Newsgroups: $groups\r\n";
         $header .= "Subject: $subject\r\n";
         $header .= "X-poster: PEAR::Net_NNTP v@package_version@ (@package_state@)\r\n";
@@ -684,8 +595,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	}
         $header .= "\r\n";
 
-    	// Actually send the article
-    	return $this->cmdPost2(array($header, $body));
+    	return $this->cmdPost2([$header, $body]);
     }
 
     // }}}
@@ -754,7 +664,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     public function getNewGroups(mixed $time, ?string $distributions = null): mixed
     {
     	switch (true) {
-case \is_integer($time):
+    	    case \is_integer($time):
 	    	break;
     	    case \is_string($time):
     	    	$time = strtotime($time);
@@ -796,12 +706,11 @@ case \is_integer($time):
     public function getNewArticles(mixed $time, string $groups = '*', ?string $distribution = null)
     {
     	switch (true) {
-case \is_integer($time):
+    	    case \is_integer($time):
 	    	break;
     	    case \is_string($time):
     	    	$time = strtotime($time);
-				if ($time === false) {
-
+			if ($time === false) {
     	    	    return $this->throwError('$time could not be converted into a timestamp!', null, 0);
 		}
     	    	break;
@@ -835,7 +744,6 @@ case \is_integer($time):
     {
     	$backup = false;
 
-    	// Get groups
     	$groups = $this->cmdListActive($wildmat);
     	if (Net_NNTP_Error::isError($groups)) {
     	    switch ($groups->getCode()) {
@@ -848,15 +756,11 @@ case \is_integer($time):
     	    }
     	}
 
-    	// 
-    	if ($backup === true) {
-
-    	    // 
-    	    if (!\is_null($wildmat)) {
+    	if ($backup) {
+    	    if ($wildmat !== null) {
     	    	return $this->throwError("The server does not support the 'LIST ACTIVE' command, and the 'LIST' command does not support the wildmat parameter!", null, null);
     	    }
 	    
-    	    // 
     	    $groups2 = $this->cmdList();
     	    if (Net_NNTP_Error::isError($groups2)) {
     		// Ignore...
@@ -902,13 +806,10 @@ case \is_integer($time):
 	    $wildmat = implode(',', $wildmat);
     	}
 
-    	// Get group descriptions
     	$descriptions = $this->cmdListNewsgroups($wildmat);
     	if (Net_NNTP_Error::isError($descriptions)) {
     	    return $descriptions;
     	}
-
-    	// TODO: add xgtitle as backup
 	
     	return $descriptions;
     }
@@ -959,78 +860,35 @@ case \is_integer($time):
      */
     public function getOverview(mixed $range = null, bool $_names = true, bool $_forceNames = true): mixed
     {
-    	// API v1.0
-    	switch (true) {
-	    // API v1.3
-	    case \func_num_args() != 2:
-	    case \is_bool(\func_get_arg(1)):
-	    case !\is_int(\func_get_arg(1)) || (\is_string(\func_get_arg(1)) && ctype_digit(\func_get_arg(1))):
-	    case !\is_int(\func_get_arg(0)) || (\is_string(\func_get_arg(0)) && ctype_digit(\func_get_arg(0))):
-		break;
-
-	    default:
-    	    	// 
-    	        trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getOverview() !', E_USER_NOTICE);
-
-    	        // Fetch overview via API v1.3
-    	        $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
-    	        if (Net_NNTP_Error::isError($overview)) {
-    	            return $overview;
-    	        }
-
-    	        // Create and return API v1.0 compliant array
-    	        $articles = array();
-    	        foreach ($overview as $article) {
-
-    	    	    // Rename 'Number' field into 'number'
-    	    	    $article = array_merge(array('number' => array_shift($article)), $article);
-		
-    	    	    // Use 'Message-ID' field as key
-    	            $articles[$article['Message-ID']] = $article;
-    	        }
-    	        return $articles;
-    	}
-
-    	// Fetch overview from server
     	$overview = $this->cmdXOver($range);
     	if (Net_NNTP_Error::isError($overview)) {
     	    return $overview;
     	}
 
-	    // Use field names from overview format as keys?
 	    if ($_names) {
 
-    	    // Already cached?
-    	    if (\is_null($this->_overviewFormatCache)) {
-    	    	// Fetch overview format
+    	    if ($this->_overviewFormatCache === null) {
     	        $format = $this->getOverviewFormat($_forceNames, true);
     	        if (Net_NNTP_Error::isError($format)){
     	            return $format;
     	        }
 
-    	    	// Prepend 'Number' field
-    	    	$format = array_merge(array('Number' => false), $format);
-
-    	    	// Cache format
+    	    	$format = array_merge(['Number' => false], $format);
     	        $this->_overviewFormatCache = $format;
-
-    	    // 
     	    } else {
     	        $format = $this->_overviewFormatCache;
     	    }
 
-	    	// Loop through all articles
             $fieldNames = array_keys($format);
             $fieldFlags = array_values($format);
             $fieldCount = \count($fieldNames);
 
             foreach ($overview as $key => $article) {
-                $mappedArticle = array();
+                $mappedArticle = [];
 
                 for ($i = 0; $i < $fieldCount; $i++) {
                     $value = $article[$i] ?? '';
 
-                    // If prefixed by field name, remove it
                     if ($fieldFlags[$i] === true) {
                         $pos = strpos($value, ':');
                         $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
@@ -1039,30 +897,20 @@ case \is_integer($time):
                     $mappedArticle[$fieldNames[$i]] = $value;
                 }
 
-                // Replace article
                 $overview[$key] = $mappedArticle;
             }
 	    }
 
-    	//
-    	switch (true) {
+    	$expectSingle = $range === null
+    	    || \is_int($range)
+    	    || (\is_string($range) && ctype_digit($range))
+    	    || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
 
-    	    // Expect one article
-    	    case \is_null($range):
-    	    case \is_int($range):
-            case \is_string($range) && ctype_digit($range):
-    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-    	        if (\count($overview) === 0) {
-    	    	    return false;
-    	    	}
-		    
-		    return reset($overview);
-		    break;
-
-    	    // Expect multiple articles
-    	    default:
-    	    	return $overview;
+    	if ($expectSingle) {
+    	    return \count($overview) === 0 ? false : reset($overview);
     	}
+
+    	return $overview;
     }
 
     // }}}
@@ -1093,23 +941,18 @@ case \is_integer($time):
     	    return $format;
     	}
 
-    	// Force name of first seven fields
     	if ($_forceNames) {
     	    array_splice($format, 0, 7);
-    	    $format = array_merge(array('Subject'    => false,
-    	                                'From'       => false,
-    	                                'Date'       => false,
-    	                                'Message-ID' => false,
-    	    	                        'References' => false,
-    	                                ':bytes'     => false,
-    	                                ':lines'     => false), $format);
+    	    $format = array_merge(['Subject'    => false,
+    	                           'From'       => false,
+    	                           'Date'       => false,
+    	                           'Message-ID' => false,
+    	    	                   'References' => false,
+    	                           ':bytes'     => false,
+    	                           ':lines'     => false], $format);
     	}
 
-    	if ($_full) {
-    	    return $format;
-    	} else {
-    	    return array_keys($format);
-    	}
+    	return $_full ? $format : array_keys($format);
     }
 
     // }}}
@@ -1148,32 +991,19 @@ case \is_integer($time):
     	    return $fields;
     	}
 
-    	//
-    	switch (true) {
+    	$expectSingle = $range === null
+    	    || \is_int($range)
+    	    || (\is_string($range) && ctype_digit($range))
+    	    || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
 
-    	    // Expect one article
-    	    case \is_null($range):
-    	    case \is_int($range):
-            case \is_string($range) && ctype_digit($range):
-    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-
-    	        if (\count($fields) === 0) {
-    	    	    return false;
-    	    	}
-		    
-		    return reset($fields);
-		    break;
-
-    	    // Expect multiple articles
-    	    default:
-    	    	return $fields;
+    	if ($expectSingle) {
+    	    return \count($fields) === 0 ? false : reset($fields);
     	}
+
+    	return $fields;
     }
 
     // }}}
-
-
-
 
 
 
@@ -1205,12 +1035,10 @@ case \is_integer($time):
     	    return $summary;
     	}
 
-    	// Update summary cache if group was also 'selected'
     	if ($summary['group'] !== null) {
     	    $this->_selectedGroupSummary = $summary;
     	}
 	
-    	//
     	return $summary['articles'];
     }
 
@@ -1260,11 +1088,11 @@ case \is_integer($time):
     	    }
     	}
 
-    	if (true && (\is_array($references) && \count($references) === 0)) {
+    	if (\is_array($references) && \count($references) === 0) {
     	    $backup = true;
     	}
 
-    	if ($backup === true) {
+    	if ($backup) {
     	    $references2 = $this->cmdXROver($range);
     	    if (Net_NNTP_Error::isError($references2)) {
     		// Ignore...
@@ -1283,29 +1111,19 @@ case \is_integer($time):
     	    }
 	}
 
-    	//
-    	switch (true) {
+    	$expectSingle = $range === null
+    	    || \is_int($range)
+    	    || (\is_string($range) && ctype_digit($range))
+    	    || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
 
-    	    // Expect one article
-    	    case \is_null($range):
-    	    case \is_int($range):
-    	    case \is_string($range) && ctype_digit($range):
-    	    case \is_string($range) && substr($range, 0, 1) == '<' && substr($range, -1, 1) == '>':
-    	        if (\count($references) === 0) {
-    	    	    return false;
-    	    	}
-		    
-		    return reset($references);
-		    break;
-
-    	    // Expect multiple articles
-    	    default:
-    	    	return $references;
+    	if ($expectSingle) {
+    	    return \count($references) === 0 ? false : reset($references);
     	}
+
+    	return $references;
     }
 
     // }}}
-
 
 
 
@@ -1410,9 +1228,6 @@ case \is_integer($time):
 
 
 
-
-
-
     // {{{ isConnected()
 
     /**
@@ -1511,11 +1326,3 @@ case \is_integer($time):
 }
 
 // }}}
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * c-hanging-comment-ender-p: nil
- * End:
- */

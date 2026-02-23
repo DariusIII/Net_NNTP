@@ -4,24 +4,41 @@ declare(strict_types=1);
 
 ini_set('memory_limit', '1024M');
 
-require_once __DIR__ . '/../NNTP/Client.php';
+$autoload = __DIR__ . '/../vendor/autoload.php';
+if (!is_file($autoload)) {
+    fwrite(STDERR, "Run 'composer install' first so vendor/autoload.php exists.\n");
+    exit(1);
+}
+require $autoload;
 
 /**
  * End-to-end NNTP benchmark helper.
  *
  * Usage example:
- * php tests/benchmark_integration.php \
- *   --host=your.news.server \
- *   --port=563 \
- *   --encryption=tls \
- *   --user=your-user \
- *   --pass=your-pass \
- *   --group=alt.binaries.example \
- *   --range=100000-100200 \
- *   --iterations=5
+ *   php tests/benchmark_integration.php --host=news.example.com --group=alt.binaries.example --range=1-500 --iterations=5
  *
- * Environment fallback:
- * NNTP_HOST, NNTP_PORT, NNTP_ENCRYPTION, NNTP_USER, NNTP_PASS, NNTP_GROUP, NNTP_RANGE, NNTP_ITERATIONS, NNTP_TIMEOUT
+ * Options: --host, --group, --range (required), --port, --encryption, --user, --pass, --iterations, --timeout, --include-legacy-reader
+ * Environment fallback: NNTP_HOST, NNTP_PORT, NNTP_ENCRYPTION, NNTP_USER, NNTP_PASS, NNTP_GROUP, NNTP_RANGE, NNTP_ITERATIONS, NNTP_TIMEOUT
+ *
+ * WHAT EACH ROW MEANS
+ * -------------------
+ * - getOverview() current   = Full stack: XOVER fetch (optimized reader) + overview format (cached after 1st) + field mapping. This is the baseline (0%).
+ * - XOVER raw               = Only cmdXOver(): fetch lines, split on tab. No field-name mapping.
+ * - XOVER + legacy map      = XOVER raw (same fetch) + "legacy" mapping (see below).
+ * - XOVER + optimized map  = XOVER raw (same fetch) + "optimized" mapping (see below). Same approach as getOverview() uses.
+ * - XOVER using legacy reader = Same as XOVER raw but uses an old-style line reader (getTextResponseLegacy), then tab-split. No _getTextResponse() optimizations.
+ *
+ * LEGACY MAP vs OPTIMIZED MAP (same input, same output, different PHP loop):
+ * - Legacy:  For each article, copy the format array then foreach over it, filling values from $article[$index++]. More array copies and indirection.
+ * - Optimized: Precompute array_keys(format) and array_values(format) once. For each article, one for-loop with integer $i, $mappedArticle[$fieldNames[$i]] = $article[$i]. Same result, fewer ops. This is what getOverview() uses.
+ *
+ * INTERPRETING RESULTS
+ * --------------------
+ * - Baseline is getOverview() current. All "%" deltas are relative to its median.
+ * - Medians are from N runs (--iterations). With only 5 runs, one slow or fast run can shift the median a lot.
+ * - Check min/max: if they differ a lot (e.g. min 540ms, max 1083ms), the median is unstable and ordering can flip between runs.
+ * - For stabler comparison use more iterations, e.g. --iterations=10 or run the script 2–3 times and compare.
+ * - After the v2.2 optimizations, getOverview() already uses the fast reader + cached format; "XOVER + optimized map" does the same work, so they should be close. Any reversal (e.g. "legacy map" faster than "optimized map") is usually variance.
  */
 final class NetNntpBenchmarkClient extends Net_NNTP_Client
 {
@@ -37,7 +54,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
             return $response;
         }
 
-        if ($response !== NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS) {
+        if ($response !== ResponseCode::OverviewFollows->value) {
             return $this->_handleUnexpectedResponse($response);
         }
 
@@ -53,6 +70,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
         return $data;
     }
 
+    /** Legacy mapping: copy format per article, foreach over format keys, fill from article by index++. */
     public function mapOverviewLegacy(array $overview, array $format): array
     {
         foreach ($overview as $key => $article) {
@@ -73,6 +91,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
         return $overview;
     }
 
+    /** Optimized mapping: precompute field names/flags once, then for-loop with int index per article. Same as getOverview(). */
     public function mapOverviewOptimized(array $overview, array $format): array
     {
         $fieldNames = array_keys($format);
@@ -118,7 +137,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
 
             $line .= $received;
 
-            if (substr($line, -2) != "\r\n" || \strlen($line) < 2) {
+            if (!str_ends_with($line, "\r\n") || \strlen($line) < 2) {
                 usleep(25000);
                 continue;
             }
@@ -129,7 +148,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
                 return $data;
             }
 
-            if (substr($line, 0, 2) == '..') {
+            if (str_starts_with($line, '..')) {
                 $line = substr($line, 1);
             }
 
@@ -402,6 +421,8 @@ try {
                 percentDelta($baseline, $median)
             );
         }
+        echo str_repeat('-', 120) . PHP_EOL;
+        echo "Note: Medians can jump with few iterations (min/max show spread). Use --iterations=10 or run multiple times for stabler comparison.\n";
     }
 } catch (Throwable $e) {
     fwrite(STDERR, 'Benchmark failed: ' . $e->getMessage() . PHP_EOL);

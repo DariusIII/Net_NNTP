@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * 
- * 
- * PHP versions 4 and 5
+ *
+ *
+ * PHP versions 8.5 and above
  *
  * <pre>
  * +-----------------------------------------------------------------------+
@@ -64,446 +64,74 @@
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
  * @link       http://pear.php.net/package/Net_NNTP
- * @see        
+ * @see
  * @since      File available since release 1.3.0
  */
 
-
-
-// {{{ Constants: Connection
-
-/**
- * 'Server ready - posting allowed' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED', 200);
-
-/**
- * 'Server ready - no posting allowed' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_PROHIBITED', 201);
-
-
-/**
- * 'Closing connection - goodbye!' (RFC977)
- *
- * @access     public
- * @since      ?
- */
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_REQUESTED', 205);   ///// goodbye
-
-/**
- * 'Service discontinued' (RFC977)
- *
- * @access     public
- * @since      ?
- */
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_DISCONNECTING_FORCED', 400);   ///// unavailable / discontinued
-
-
-/**
- * 'Slave status noted' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SLAVE_RECOGNIZED', 202);
-
-
-
-
-// }}}
-// {{{ Constants: Common errors
-
-
-
-/**
- * 'Command not recognized' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_UNKNOWN_COMMAND', 500);
-
-/**
- * 'Command syntax error' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SYNTAX_ERROR', 501);
-
-/**
- * 'Access restriction or permission denied' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_PERMITTED', 502);
-
-/**
- * 'Program fault - command not performed' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NOT_SUPPORTED', 503);
-
-
-
-// }}}
-// {{{ Constants: Group selection
-
-
-
-/**
- * 'Group selected' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUP_SELECTED', 211);
-
-/**
- * 'No such news group' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_GROUP', 411);
-
-
-
-// }}}
-// {{{ Constants: Article retrieval
-
-
-
-/**
- * 'Article retrieved - head and body follow' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_FOLLOWS', 220);
-
-/**
- * 'Article retrieved - head follows' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_HEAD_FOLLOWS', 221);
-
-/**
- * 'Article retrieved - body follows' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_BODY_FOLLOWS', 222);
-
-/**
- * 'Article retrieved - request text separately' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_ARTICLE_SELECTED', 223);
-
-
-
-
-
-/**
- * 'No newsgroup has been selected' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_GROUP_SELECTED', 412);
-
-
-/**
- * 'No current article has been selected' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_ARTICLE_SELECTED', 420);
-
-/**
- * 'No next article in this group' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_NEXT_ARTICLE', 421);
-
-/**
- * 'No previous article in this group' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_PREVIOUS_ARTICLE', 422);
-
-
-/**
- * 'No such article number in this group' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_NUMBER', 423);
-
-/**
- * 'No such article found' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NO_SUCH_ARTICLE_ID', 430);
-
-
-
-
-
-// }}}
-// {{{ Constants: Transferring
-
-
-
-/**
- * 'Send article to be transferred' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SEND', 335);
-
-/**
- * 'Article transferred ok' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_SUCCESS', 235);
-
-/**
- * 'Article not wanted - do not send it' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_UNWANTED', 435);
-
-/**
- * 'Transfer failed - try again later' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_FAILURE', 436);
-
-/**
- * 'Article rejected - do not try again' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_TRANSFER_REJECTED', 437);
-
-
-
-// }}}
-// {{{ Constants: Posting
-
-
-
-/**
- * 'Send article to be posted' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_SEND', 340);
-
-/**
- * 'Article posted ok' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_SUCCESS', 240);
-
-/**
- * 'Posting not allowed' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_PROHIBITED', 440);
-
-/**
- * 'Posting failed' (RFC977)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_POSTING_FAILURE', 441);
-
-
-
-
-// }}}
-// {{{ Constants: Authorization
-
-
-
-/**
- * 'Authorization required for this command' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_REQUIRED', 450);
-
-/**
- * 'Continue with authorization sequence' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_CONTINUE', 350);
-
-/**
- * 'Authorization accepted' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_ACCEPTED', 250);
-
-/**
- * 'Authorization rejected' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHORIZATION_REJECTED', 452);
-
-
-
-
-// }}}
-// {{{ Constants: Authentication
-
-
-
-/**
- * 'Authentication required' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REQUIRED', 480);
-
-/**
- * 'More authentication information required' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_CONTINUE', 381);
-
-/**
- * 'Authentication accepted' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_ACCEPTED', 281);
-
-/**
- * 'Authentication rejected' (RFC2980)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_AUTHENTICATION_REJECTED', 482);
-    
-
-// }}}
-// {{{ Constants: Misc
-
-
-
-/**
- * 'Help text follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_HELP_FOLLOWS', 100);
-
-/**
- * 'Capabilities list follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_CAPABILITIES_FOLLOW', 101);
-
-/**
- * 'Server date and time' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_SERVER_DATE', 111);
-
-/**
- * 'Information follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_GROUPS_FOLLOW', 215);
-
-/**
- * 'Overview information follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_OVERVIEW_FOLLOWS', 224);
-
-/**
- * 'Headers follow' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_HEADERS_FOLLOW', 225);
-
-/**
- * 'List of new articles follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_ARTICLES_FOLLOW', 230);
-
-/**
- * 'List of new newsgroups follows' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_NEW_GROUPS_FOLLOW', 231);
-
-/**
- * 'The server is in the wrong mode; the indicated capability should be used to change the mode' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_WRONG_MODE', 401);
-
-/**
- * 'Internal fault or problem preventing action being taken' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_INTERNAL_FAULT', 403);
-
-/**
- * 'Command unavailable until suitable privacy has been arranged' (Draft)
- *
- * (the client must negotiate appropriate privacy protection on the connection.
- * This will involve the use of a privacy extension such as [NNTP-TLS].)
- *
- * @access     public
- * @since      ?
- */
-//define('NET_NNTP_PROTOCOL_RESPONSECODE_ENCRYPTION_REQUIRED', 483);
-
-/**
- * 'Error in base64-encoding [RFC3548] of an argument' (Draft)
- *
- * @access     public
- */
-define('NET_NNTP_PROTOCOL_RESPONSECODE_BASE64_ENCODING_ERROR', 504);
-
-// }}}
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * c-hanging-comment-ender-p: nil
- * End:
- */
-
-?>
+enum ResponseCode: int
+{
+    // Connection
+    case ReadyPostingAllowed = 200;
+    case ReadyPostingProhibited = 201;
+    case SlaveRecognized = 202;
+
+    // Common errors
+    case UnknownCommand = 500;
+    case SyntaxError = 501;
+    case NotPermitted = 502;
+    case NotSupported = 503;
+
+    // Group selection
+    case GroupSelected = 211;
+    case NoSuchGroup = 411;
+
+    // Article retrieval
+    case ArticleFollows = 220;
+    case HeadFollows = 221;
+    case BodyFollows = 222;
+    case ArticleSelected = 223;
+    case NoGroupSelected = 412;
+    case NoArticleSelected = 420;
+    case NoNextArticle = 421;
+    case NoPreviousArticle = 422;
+    case NoSuchArticleNumber = 423;
+    case NoSuchArticleId = 430;
+
+    // Transferring
+    case TransferSend = 335;
+    case TransferSuccess = 235;
+    case TransferUnwanted = 435;
+    case TransferFailure = 436;
+    case TransferRejected = 437;
+
+    // Posting
+    case PostingSend = 340;
+    case PostingSuccess = 240;
+    case PostingProhibited = 440;
+    case PostingFailure = 441;
+
+    // Authorization
+    case AuthorizationRequired = 450;
+    case AuthorizationContinue = 350;
+    case AuthorizationAccepted = 250;
+    case AuthorizationRejected = 452;
+
+    // Authentication
+    case AuthenticationRequired = 480;
+    case AuthenticationContinue = 381;
+    case AuthenticationAccepted = 281;
+    case AuthenticationRejected = 482;
+
+    // Misc
+    case HelpFollows = 100;
+    case CapabilitiesFollow = 101;
+    case ServerDate = 111;
+    case GroupsFollow = 215;
+    case OverviewFollows = 224;
+    case HeadersFollow = 225;
+    case NewArticlesFollow = 230;
+    case NewGroupsFollow = 231;
+    case WrongMode = 401;
+    case InternalFault = 403;
+    case Base64EncodingError = 504;
+}
