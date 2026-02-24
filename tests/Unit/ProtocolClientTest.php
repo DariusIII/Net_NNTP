@@ -6,6 +6,7 @@ namespace Net\NNTP\Tests\Unit;
 
 use Net\NNTP\Error;
 use Net\NNTP\Protocol\Client as ProtocolClient;
+use Net\NNTP\Protocol\ResponseCode;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -16,9 +17,9 @@ final class ProtocolClientTest extends TestCase
 
     protected function setUp(): void
     {
-        // ProtocolClient has a protected constructor, so we need an anonymous subclass
         $this->protocol = new class extends ProtocolClient {
-            // expose protected methods for testing
+            public function __construct() { parent::__construct(); }
+
             public function publicThrowError(string $msg, ?int $code = null, mixed $info = null): Error
             {
                 return $this->throwError($msg, $code, $info);
@@ -31,14 +32,11 @@ final class ProtocolClientTest extends TestCase
 
             public function publicHandleUnexpectedResponse(?int $code = null, ?string $text = null): mixed
             {
-                // Set up the internal state so _handleUnexpectedResponse can read it
                 $this->_currentStatusResponse = [$code ?? 0, $text ?? ''];
                 return $this->_handleUnexpectedResponse($code, $text);
             }
         };
     }
-
-    // ── Instantiation ──────────────────────────────────────────────
 
     public function testConstructorInitializesSocketToNull(): void
     {
@@ -51,8 +49,6 @@ final class ProtocolClientTest extends TestCase
         $ref = new \ReflectionProperty(ProtocolClient::class, '_encryption');
         $this->assertNull($ref->getValue($this->protocol));
     }
-
-    // ── throwError ─────────────────────────────────────────────────
 
     public function testThrowErrorReturnsErrorObject(): void
     {
@@ -72,14 +68,10 @@ final class ProtocolClientTest extends TestCase
         $this->assertNull($error->getUserInfo());
     }
 
-    // ── _isConnected ───────────────────────────────────────────────
-
     public function testIsConnectedReturnsFalseWithoutSocket(): void
     {
         $this->assertFalse($this->protocol->publicIsConnected());
     }
-
-    // ── setLogger ──────────────────────────────────────────────────
 
     public function testSetLoggerStoresLogger(): void
     {
@@ -89,8 +81,6 @@ final class ProtocolClientTest extends TestCase
         $ref = new \ReflectionProperty(ProtocolClient::class, '_logger');
         $this->assertSame($logger, $ref->getValue($this->protocol));
     }
-
-    // ── Version ────────────────────────────────────────────────────
 
     public function testGetPackageVersion(): void
     {
@@ -102,11 +92,12 @@ final class ProtocolClientTest extends TestCase
         $this->assertIsString($this->protocol->getApiVersion());
     }
 
-    // ── _handleUnexpectedResponse ──────────────────────────────────
-
     public function testHandleUnexpectedResponseReturns502Error(): void
     {
-        $result = $this->protocol->publicHandleUnexpectedResponse(502, 'Permission denied');
+        $result = $this->protocol->publicHandleUnexpectedResponse(
+            ResponseCode::NotPermitted->value,
+            'Permission denied'
+        );
 
         $this->assertInstanceOf(Error::class, $result);
         $this->assertSame(502, $result->getCode());
@@ -122,13 +113,10 @@ final class ProtocolClientTest extends TestCase
         $this->assertStringContainsString('Unexpected response', $result->getMessage());
     }
 
-    // ── _clearOpensslErrors does not crash without encryption ─────
-
     public function testClearOpensslErrorsWithoutEncryption(): void
     {
-        // Should simply return without error when _encryption is null
         $this->protocol->_clearOpensslErrors();
-        $this->assertTrue(true); // no exception thrown
+        $this->assertTrue(true);
     }
 }
 

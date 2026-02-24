@@ -48,6 +48,34 @@ Release v3.0.0
 - Updated `phpunit.xml` with separate Unit and Integration test suites
 - Updated demo and phpdoc examples to use namespaced classes
 
+**Enums & code optimization:**
+- Created `Net\NNTP\Protocol\ResponseCode` int-backed enum with all 53 NNTP response codes
+  - Each case includes a `description()` method returning the RFC description
+  - Supports `ResponseCode::from(int)` and `ResponseCode::tryFrom(int)` natively
+  - Added 6 new codes not previously defined: `DisconnectingRequested` (205), `DisconnectingForced` (400), `TlsContinue` (382), `TlsRefused` (580), `XgtitleFollows` (282), `XgtitleUnavailable` (481)
+- Converted `Responsecode.php` to a backwards-compatible shim — all `define()` constants now delegate to `ResponseCode::CASE->value`
+- Replaced all `NET_NNTP_PROTOCOL_RESPONSECODE_*` references in `Protocol\Client` with `ResponseCode::CASE->value`
+- Replaced all bare integer response codes (205, 382, 400, 502, 503, etc.) with enum references
+- Converted all `switch` blocks to `match` expressions throughout `Protocol\Client` and `Client`
+- Removed all unreachable `break` statements after `return` (~50+ instances)
+- Removed dead code: `if (false) { ... }` block, `die()` calls, unused namespace-level constants
+- Removed all vim modelines, `{{{ }}}` fold markers, and "Local variables" blocks from all source files
+- Added `declare(strict_types=1)` to all source files
+- Applied constructor property promotion with `readonly` to `Error` class
+- Refactored duplicated parsing logic in `Protocol\Client` into private helper methods:
+  `_parseGroupSelected()`, `_parseArticlePointer()`, `_fetchTextAndLog()`, `_parseGroupLines()`,
+  `_parseOverviewResponse()`, `_parseKeyValueResponse()`, `_parseOverviewFormat()`,
+  `_parseNewsgroupDescriptions()`, `_logAndReturn()`, `_handleTlsNegotiation()`
+- Extracted `_resolveTimestamp()` helper in `Client` to deduplicate time parsing
+- Used `str_ends_with()` / `str_starts_with()` instead of `substr()` comparisons
+- Used null coalescing assignment (`??=`) throughout
+- Used nullsafe operator (`?->`) consistently for logger calls
+- Used union types for `_sendArticle(string|array)` parameter
+- Expanded test suite to 335 tests / 526 assertions (was 117 / 253):
+  - Added enum tests: case values, `from()`, `tryFrom()`, `description()`, int-backed verification
+  - Added legacy constant shim verification
+  - Added `ResponseCode` autoload and namespace tests
+
 (Released: 2026-02-24)
 
 

@@ -49,6 +49,17 @@ final class AutoloadTest extends TestCase
         $this->assertTrue(is_subclass_of(\Net\NNTP\Client::class, \Net\NNTP\Protocol\Client::class));
     }
 
+    public function testResponseCodeEnumAutoloads(): void
+    {
+        $this->assertTrue(enum_exists(\Net\NNTP\Protocol\ResponseCode::class));
+    }
+
+    public function testResponseCodeEnumNamespace(): void
+    {
+        $ref = new \ReflectionEnum(\Net\NNTP\Protocol\ResponseCode::class);
+        $this->assertSame('Net\\NNTP\\Protocol', $ref->getNamespaceName());
+    }
+
     public function testResponsecodeConstantsLoadedViaFilesAutoload(): void
     {
         // These are loaded via composer "files" autoload, not via PSR-4
