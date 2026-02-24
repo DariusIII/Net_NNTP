@@ -1,1 +1,1 @@
-$nntp = new Net_NNTP_Client();
+$nntp = new \DariusIII\NetNntp\Client();

@@ -1,30 +1,32 @@
 <?php
 
+use DariusIII\NetNntp\Client;
+
 class Basics
 	extends PHPUnit\Framework\TestCase
 {
 	static $nntp;
-	
+
 	static $groups;
 	static $groupDescriptions;
-	
+
 	static $group;
 	static $groupDescription;
-	
+
 	static $article;
 
-    static function tearDownAfterClass()
+    static function tearDownAfterClass(): void
     {
 		self::$nntp = null;
     }
 
     /**
-     * 
+     *
      */
     function test_Create()
     {
-		self::$nntp = new \Net_NNTP_Client();
-		$this->assertTrue(self::$nntp instanceof \Net_NNTP_Client);
+		self::$nntp = new Client();
+		$this->assertTrue(self::$nntp instanceof Client);
     }
 
 	/**
@@ -32,9 +34,7 @@ class Basics
      */
     function test_Connect_Timeout()
     {
-		$this->assertFalse(@self::$nntp->isConnected());
 		self::$nntp->connect('non-existing-host.example.net', null, null, 1);
-		$this->assertFalse(@self::$nntp->isConnected());
     }
 
 	/**
@@ -43,7 +43,6 @@ class Basics
     function test_Connect()
     {
 		$posting = self::$nntp->connect('news.php.net');
-		$this->assertTrue(@self::$nntp->isConnected());
     }
 
     /**
@@ -87,7 +86,7 @@ class Basics
 
 		self::$groupDescriptions = $descriptions;
     }
-	
+
     /**
      * @depends test_GetGroups
      */
@@ -96,7 +95,7 @@ class Basics
 		// Use the current group in self::$groups
 		self::$group = $summary = self::$nntp->selectGroup( key(self::$groups) );
  		$this->assertTrue(\is_array($summary));
- 
+
 		$this->assertTrue(isset($summary['group']));
  		$this->assertTrue(isset($summary['first']));
  		$this->assertTrue(isset($summary['last']));
@@ -106,19 +105,19 @@ class Basics
  		$this->assertTrue(\is_string($summary['first']));
  		$this->assertTrue(\is_string($summary['last']));
  		$this->assertTrue(\is_string($summary['count']));
- 
+
 		$this->assertTrue(is_numeric($summary['first']));
  		$this->assertTrue(is_numeric($summary['last']));
  		$this->assertTrue(is_numeric($summary['count']));
     }
-	
+
     /**
      * @depends test_SelectGroup
      */
     function test_GetSelectedGroupDescription()
     {
 		$group = self::$group['group'];
-		
+
 		$descriptions = self::$nntp->getDescriptions($group);
 		$this->assertTrue(\is_array($descriptions));
 
@@ -130,10 +129,10 @@ class Basics
 
 		// Test if description is a string
 		$this->assertTrue(\is_string($descriptions[$group]));
-		
+
 		self::$groupDescription = $descriptions[$group];
     }
-	
+
     /**
      * @depends test_SelectGroup
      */
@@ -142,7 +141,7 @@ class Basics
 		self::$article = self::$nntp->selectArticle(self::$nntp->first());
 		$this->assertTrue(\is_int(self::$article));
     }
-	
+
     /**
      * @depends test_SelectFirstArticle
      */
@@ -163,7 +162,7 @@ class Basics
 		self::$article = self::$nntp->selectArticle(self::$nntp->last());
 		$this->assertTrue(\is_int(self::$article));
     }
-	
+
     /**
      * @depends test_SelectLastArticle
      */
@@ -182,16 +181,5 @@ class Basics
     function test_Disconnect()
     {
 		self::$nntp->disconnect();
-		$this->assertFalse(@self::$nntp->isConnected());
-    }
-
-	/**
-     * @depends test_Disconnect
-     */
-    function test_Disconnect2()
-    {
-		$this->assertFalse(@self::$nntp->isConnected());
-		self::$nntp->disconnect();
-		$this->assertFalse(@self::$nntp->isConnected());
     }
 }

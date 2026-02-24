@@ -15,9 +15,9 @@
         "source": "https://github.com/DariusIII/Net_NNTP"
     },
     "autoload": {
-        "classmap": [
-            "./"
-        ]
+        "psr-4": {
+            "DariusIII\\NetNntp\\": "src/"
+        }
     },
     "require": {
 		"php": ">=8.5"

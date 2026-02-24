@@ -220,10 +220,7 @@ $logger->grabPearErrors();
 /********************/
 
 //
-require_once 'Net/NNTP/Client.php';
-
-//
-$nntp = new Net_NNTP_Client();
+$nntp = new \DariusIII\NetNntp\Client();
 
 // Use logger object as logger in NNTP client
 $nntp->setLogger($logger);
