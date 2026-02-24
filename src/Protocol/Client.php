@@ -130,11 +130,16 @@ class Client
     {
         $data = [];
         $line = '';
+        $hasEncryption = $this->_encryption !== null;
 
         while (!feof($this->_socket)) {
-            $this->_clearOpensslErrors();
+            if ($hasEncryption) {
+                $this->_clearOpensslErrors();
+            }
             $received = @fgets($this->_socket, 8192);
-            $this->_clearOpensslErrors();
+            if ($hasEncryption) {
+                $this->_clearOpensslErrors();
+            }
 
             if ($received === false) {
                 $meta = stream_get_meta_data($this->_socket);
@@ -177,8 +182,7 @@ class Client
     protected function _sendArticle(string|array $article): void
     {
         if (\is_string($article)) {
-            @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $article));
-            @fwrite($this->_socket, "\r\n.\r\n");
+            @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $article) . "\r\n.\r\n");
 
             if ($this->_logger) {
                 foreach (explode("\r\n", $article) as $l) {
@@ -193,19 +197,12 @@ class Client
         $header = (string) reset($article);
         $body = (string) next($article);
 
-        @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $header));
-        @fwrite($this->_socket, "\r\n");
+        @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $header) . "\r\n" . preg_replace("|\n\.|", "\n..", $body) . "\r\n.\r\n");
 
         if ($this->_logger) {
             foreach (explode("\r\n", $header) as $l) {
                 $this->_logger->debug('D: ' . $l);
             }
-        }
-
-        @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $body));
-        @fwrite($this->_socket, "\r\n.\r\n");
-
-        if ($this->_logger) {
             foreach (explode("\r\n", $body) as $l) {
                 $this->_logger->debug('D: ' . $l);
             }
@@ -301,8 +298,7 @@ class Client
         }
 
         if ($response === ResponseCode::CapabilitiesFollow->value) {
-            $data = $this->_getTextResponse();
-            return Error::isError($data) ? $data : $data;
+            return $this->_getTextResponse();
         }
 
         return $this->_handleUnexpectedResponse($response);
@@ -668,8 +664,7 @@ class Client
         }
 
         if ($response === ResponseCode::HelpFollows->value) {
-            $data = $this->_getTextResponse();
-            return Error::isError($data) ? $data : $data;
+            return $this->_getTextResponse();
         }
 
         return $this->_handleUnexpectedResponse($response);
@@ -716,8 +711,7 @@ class Client
         }
 
         if ($response === ResponseCode::NewArticlesFollow->value) {
-            $textResponse = $this->_getTextResponse();
-            return Error::isError($textResponse) ? $textResponse : $textResponse;
+            return $this->_getTextResponse();
         }
 
         return $this->_handleUnexpectedResponse($response);
@@ -797,8 +791,10 @@ class Client
 
         $groups = [];
         foreach ($data as $line) {
-            if (preg_match("/^(\S+)\s+(.*)$/", ltrim($line), $matches)) {
-                $groups[$matches[1]] = (string) $matches[2];
+            $line = ltrim($line);
+            $parts = explode(' ', $line, 2);
+            if ($parts[0] !== '' && isset($parts[1])) {
+                $groups[$parts[0]] = $parts[1];
             } else {
                 $this->_logger?->warning("Received non-standard line: '$line'");
             }
@@ -965,8 +961,10 @@ class Client
 
         $groups = [];
         foreach ($data as $line) {
-            preg_match("/^(.*?)\s(.*?$)/", trim($line), $matches);
-            $groups[$matches[1]] = (string) $matches[2];
+            $parts = explode(' ', trim($line), 2);
+            if (isset($parts[1])) {
+                $groups[$parts[0]] = $parts[1];
+            }
         }
         return $groups;
     }

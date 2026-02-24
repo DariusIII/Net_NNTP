@@ -361,11 +361,19 @@ class Client extends ProtocolClient
             $fieldFlags = array_values($format);
             $fieldCount = \count($fieldNames);
 
+            // Pre-compute which field indices need "full" header stripping
+            $fullIndices = [];
+            for ($i = 0; $i < $fieldCount; $i++) {
+                if ($fieldFlags[$i] === true) {
+                    $fullIndices[$i] = true;
+                }
+            }
+
             foreach ($overview as $key => $article) {
                 $mapped = [];
                 for ($i = 0; $i < $fieldCount; $i++) {
                     $value = $article[$i] ?? '';
-                    if ($fieldFlags[$i] === true) {
+                    if (isset($fullIndices[$i])) {
                         $pos = strpos($value, ':');
                         $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
                     }
@@ -492,7 +500,7 @@ class Client extends ProtocolClient
 
         if (\is_array($references)) {
             foreach ($references as $key => $val) {
-                $references[$key] = preg_split("/ +/", trim($val), -1, PREG_SPLIT_NO_EMPTY);
+                $references[$key] = array_values(array_filter(explode(' ', trim($val)), static fn(string $s): bool => $s !== ''));
             }
         }
 
