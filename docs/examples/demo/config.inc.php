@@ -1,95 +1,45 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * 
- * 
- * PHP versions 4 and 5
- *
- * <pre>
- * +-----------------------------------------------------------------------+
- * |                                                                       |
- * | W3C� SOFTWARE NOTICE AND LICENSE                                      |
- * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
- * |                                                                       |
- * | This work (and included software, documentation such as READMEs,      |
- * | or other related items) is being provided by the copyright holders    |
- * | under the following license. By obtaining, using and/or copying       |
- * | this work, you (the licensee) agree that you have read, understood,   |
- * | and will comply with the following terms and conditions.              |
- * |                                                                       |
- * | Permission to copy, modify, and distribute this software and its      |
- * | documentation, with or without modification, for any purpose and      |
- * | without fee or royalty is hereby granted, provided that you include   |
- * | the following on ALL copies of the software and documentation or      |
- * | portions thereof, including modifications:                            |
- * |                                                                       |
- * | 1. The full text of this NOTICE in a location viewable to users       |
- * |    of the redistributed or derivative work.                           |
- * |                                                                       |
- * | 2. Any pre-existing intellectual property disclaimers, notices,       |
- * |    or terms and conditions. If none exist, the W3C Software Short     |
- * |    Notice should be included (hypertext is preferred, text is         |
- * |    permitted) within the body of any redistributed or derivative      |
- * |    code.                                                              |
- * |                                                                       |
- * | 3. Notice of any changes or modifications to the files, including     |
- * |    the date changes were made. (We recommend you provide URIs to      |
- * |    the location from which the code is derived.)                      |
- * |                                                                       |
- * | THIS SOFTWARE AND DOCUMENTATION IS PROVIDED "AS IS," AND COPYRIGHT    |
- * | HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED,    |
- * | INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY OR        |
- * | FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF THE SOFTWARE    |
- * | OR DOCUMENTATION WILL NOT INFRINGE ANY THIRD PARTY PATENTS,           |
- * | COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS.                               |
- * |                                                                       |
- * | COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT,        |
- * | SPECIAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE        |
- * | SOFTWARE OR DOCUMENTATION.                                            |
- * |                                                                       |
- * | The name and trademarks of copyright holders may NOT be used in       |
- * | advertising or publicity pertaining to the software without           |
- * | specific, written prior permission. Title to copyright in this        |
- * | software and any associated documentation will at all times           |
- * | remain with copyright holders.                                        |
- * |                                                                       |
- * +-----------------------------------------------------------------------+
- * </pre>
+ * Demo configuration — loads settings from .env at project root.
  *
  * @category   Net
  * @package    Net_NNTP
- * @author     Heino H. Gehlsen <heino@gehlsen.dk>
- * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C� SOFTWARE NOTICE AND LICENSE
- * @version    SVN: $Id$
  * @link       https://github.com/DariusIII/Net_NNTP
- * @see        
- * @since      File available since release 1.3.0
  */
+
+require_once __DIR__ . '/../../../vendor/autoload.php';
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../..');
+$dotenv->safeLoad();
 
 $frontpage = true;
 
-$loglevel = 5;  // 0=emergency, 1=alert, 2=critical, 3=error, 4=warning, 5=notice, 6=info, 7=debug
-$allowOverwrite = true;
-$allowPortOverwrite = false;
+// Connection
+$host       = $_ENV['NNTP_HOST'] ?? 'news.php.net';
+$port       = !empty($_ENV['NNTP_PORT']) ? (int) $_ENV['NNTP_PORT'] : null;
+$timeout    = !empty($_ENV['NNTP_TIMEOUT']) ? (int) $_ENV['NNTP_TIMEOUT'] : null;
+$encryption = !empty($_ENV['NNTP_ENCRYPTION']) ? $_ENV['NNTP_ENCRYPTION'] : null;
 
-$host = 'news.php.net';
-$port = null;
-$timeout = null;
+// Authentication
+$user = !empty($_ENV['NNTP_USER']) ? $_ENV['NNTP_USER'] : null;
+$pass = !empty($_ENV['NNTP_PASS']) ? $_ENV['NNTP_PASS'] : null;
 
-$encryption = null;
+// Demo defaults
+$wildmat  = $_ENV['NNTP_WILDMAT'] ?? 'php.pear*';
+$useRange = filter_var($_ENV['NNTP_USE_RANGE'] ?? false, FILTER_VALIDATE_BOOLEAN);
+$max      = (int) ($_ENV['NNTP_MAX_ARTICLES'] ?? 10);
 
-$user = null;
-$pass = null;
+// Logging: 0=emergency … 7=debug
+$loglevel = (int) ($_ENV['NNTP_LOG_LEVEL'] ?? 5);
 
-$wildmat = 'php.pear*';
-$useRange = false;
-$max = 10;
+// Allow URL query-string to override connection settings
+$allowOverwrite     = filter_var($_ENV['NNTP_ALLOW_OVERWRITE'] ?? true, FILTER_VALIDATE_BOOLEAN);
+$allowPortOverwrite = filter_var($_ENV['NNTP_ALLOW_PORT_OVERWRITE'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-$validateInput = true;
+// Input validation
+$validateInput           = filter_var($_ENV['NNTP_VALIDATE_INPUT'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $hostValidationRegExp    = '/^([^<>]+)$/';
 $articleValidationRegExp = '/^([0-9]+|<[^<]+>)$/';
 $groupValidationRegExp   = '/^([^<>]+)$/';
 
-?>

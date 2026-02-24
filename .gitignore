@@ -1,6 +1,9 @@
 # IDE
 .idea/
 
+# Environment
+.env
+
 # Composer
 /vendor/
 composer.lock

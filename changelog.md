@@ -5,6 +5,10 @@ Release v2.3.0
 - Made `setLogger()` public (was `protected`)
 - Removed deprecated `setDebug()` method from `Protocol\Client`
 - Updated demo `Logger` class to extend `Psr\Log\AbstractLogger` and implement `Psr\Log\LoggerInterface`
+- Added `vlucas/phpdotenv` as a dependency for demo configuration
+- Replaced hardcoded demo `config.inc.php` with `.env`-based configuration using phpdotenv
+- Added `.env.example` with all available settings and defaults
+- Added `.env` to `.gitignore`
 
 (Released: 2026-02-24)
 

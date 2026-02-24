@@ -159,8 +159,6 @@ $logger = new Logger($loglevel);
 /* Init NNTP client */
 /********************/
 
-//
-require_once __DIR__ . '/../../../vendor/autoload.php';
 
 //
 $nntp = new \Net\NNTP\Client();
