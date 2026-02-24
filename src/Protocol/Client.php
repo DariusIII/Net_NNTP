@@ -238,12 +238,6 @@ class Client
             return $this->throwError('Already connected, disconnect first!', null);
         }
 
-        // v1.0.x API
-        if (\is_int($encryption)) {
-            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Protocol\Client: connect() !', E_USER_NOTICE);
-            $port = $encryption;
-            $encryption = false;
-        }
 
         $host ??= 'localhost';
 

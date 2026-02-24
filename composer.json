@@ -17,10 +17,7 @@
     "autoload": {
         "psr-4": {
             "DariusIII\\NetNntp\\": "src/"
-        },
-        "files": [
-            "src/Protocol/Responsecode.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

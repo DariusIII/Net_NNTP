@@ -38,7 +38,6 @@ final class ClientTest extends TestCase
         $logger = new NullLogger();
         $this->client->setLogger($logger);
 
-        // Use reflection to verify the logger was set
         $ref = new \ReflectionProperty(ProtocolClient::class, '_logger');
         $this->assertSame($logger, $ref->getValue($this->client));
     }
@@ -92,26 +91,26 @@ final class ClientTest extends TestCase
         $this->assertNull($this->client->group());
     }
 
-    // ── Deprecated wrappers exist ──────────────────────────────────
+    // ── Removed deprecated methods should not exist ────────────────
 
-    public function testQuitMethodExists(): void
+    public function testDeprecatedMethodsRemoved(): void
     {
-        $this->assertTrue(method_exists($this->client, 'quit'));
-    }
+        $removedMethods = [
+            'quit',
+            'isConnected',
+            'getArticleRaw',
+            'getHeaderRaw',
+            'getBodyRaw',
+            'getNewNews',
+            'getReferencesOverview',
+        ];
 
-    public function testGetArticleRawMethodExists(): void
-    {
-        $this->assertTrue(method_exists($this->client, 'getArticleRaw'));
-    }
-
-    public function testGetHeaderRawMethodExists(): void
-    {
-        $this->assertTrue(method_exists($this->client, 'getHeaderRaw'));
-    }
-
-    public function testGetBodyRawMethodExists(): void
-    {
-        $this->assertTrue(method_exists($this->client, 'getBodyRaw'));
+        foreach ($removedMethods as $method) {
+            $this->assertFalse(
+                method_exists($this->client, $method),
+                "Deprecated method '$method' should have been removed"
+            );
+        }
     }
 
     // ── Public API method signatures ───────────────────────────────
@@ -172,5 +171,36 @@ final class ClientTest extends TestCase
         $this->assertCount(1, $params);
         $this->assertSame(LoggerInterface::class, $params[0]->getType()->getName());
     }
-}
 
+    public function testGetArticleImplodeParameterIsBool(): void
+    {
+        $ref = new \ReflectionMethod(Client::class, 'getArticle');
+        $params = $ref->getParameters();
+        $this->assertSame('bool', $params[1]->getType()->getName());
+    }
+
+    public function testGetHeaderImplodeParameterIsBool(): void
+    {
+        $ref = new \ReflectionMethod(Client::class, 'getHeader');
+        $params = $ref->getParameters();
+        $this->assertSame('bool', $params[1]->getType()->getName());
+    }
+
+    public function testGetBodyImplodeParameterIsBool(): void
+    {
+        $ref = new \ReflectionMethod(Client::class, 'getBody');
+        $params = $ref->getParameters();
+        $this->assertSame('bool', $params[1]->getType()->getName());
+    }
+
+    public function testPostParameterIsStringOrArray(): void
+    {
+        $ref = new \ReflectionMethod(Client::class, 'post');
+        $params = $ref->getParameters();
+        $type = $params[0]->getType();
+        $this->assertInstanceOf(\ReflectionUnionType::class, $type);
+        $typeNames = array_map(fn($t) => $t->getName(), $type->getTypes());
+        sort($typeNames);
+        $this->assertSame(['array', 'string'], $typeNames);
+    }
+}

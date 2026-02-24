@@ -1,24 +1,69 @@
+Release v4.1.0
+----------------
+
+**Namespace rename:**
+- Renamed root namespace from `Net\NNTP` to `DariusIII\NetNntp`:
+  - `Net\NNTP\Client` → `DariusIII\NetNntp\Client`
+  - `Net\NNTP\Error` → `DariusIII\NetNntp\Error`
+  - `Net\NNTP\Protocol\Client` → `DariusIII\NetNntp\Protocol\Client`
+  - `Net\NNTP\Protocol\ResponseCode` → `DariusIII\NetNntp\Protocol\ResponseCode`
+- Updated `composer.json` PSR-4 autoload to `"DariusIII\\NetNntp\\": "src/"`
+- Added `autoload-dev` PSR-4 entry for test namespace `"DariusIII\\NetNntp\\Tests\\": "tests/"`
+- Updated all source files, tests, docs, and examples to use new namespace
+
+**Removed all backward-compatible shims:**
+- Deleted `src/Protocol/Responsecode.php` — the `define()` constants shim file
+  - All `NET_NNTP_PROTOCOL_RESPONSECODE_*` global constants are no longer defined
+  - Use the `DariusIII\NetNntp\Protocol\ResponseCode` enum instead
+- Removed `files` autoload entry from `composer.json` (no longer needed)
+- Removed all deprecated API v1.0 and v1.1 methods from `Client`:
+  - `quit()` — use `disconnect()`
+  - `isConnected()` — was deprecated wrapper
+  - `getArticleRaw()` — use `getArticle()`
+  - `getHeaderRaw()` — use `getHeader()`
+  - `getBodyRaw()` — use `getBody()`
+  - `getNewNews()` — use `getNewArticles()`
+  - `getReferencesOverview()` — use `getReferences()`
+- Removed v1.0 connect shim (passing port as second arg) from both `Client` and `Protocol\Client`
+- Removed v1.1 class-name-as-string shim from `getArticle()`, `getHeader()`, `getBody()` — `$implode` is now strictly `bool`
+- Removed v1.0 multi-argument shim from `post()` — parameter is now `string|array`
+- Removed v1.0 two-argument shim from `getOverview()`
+
+**API tightening:**
+- `getNewGroups()` / `getNewArticles()` `$time` parameter: `mixed` → `int|string`
+- `_resolveTimestamp()` now throws `\InvalidArgumentException` instead of returning `Error`
+- `post()` parameter now typed `string|array` (use `mail()` for the old multi-arg posting style)
+- Removed `@package_version@` / `@package_state@` PEAR placeholders from X-poster mail header
+
+**Tests:**
+- Added `testDeprecatedMethodsRemoved()` — verifies all 7 removed methods no longer exist
+- Added `testLegacyConstantsNoLongerDefined()` — verifies global constants shim is gone
+- Added type-assertion tests for cleaned-up method signatures (`$implode` is `bool`, `post()` is `string|array`)
+- Removed all legacy constant shim tests (47 removed)
+- Removed deprecated method existence tests
+- Test suite: 290 tests, 441 assertions
+
+(Released: 2026-02-24)
+
+
 Release v4.0.0
 ----------------
 
 **Project structure & namespaces:**
 - Modernized project to PSR-4 standard — source files moved from `NNTP/` to `src/`
-- Renamed root namespace from `Net\NNTP` to `DariusIII\NetNntp`:
-  - `DariusIII\NetNntp\Client` → `DariusIII\NetNntp\Client`
-  - `DariusIII\NetNntp\Error` → `DariusIII\NetNntp\Error`
-  - `DariusIII\NetNntp\Protocol\Client` → `DariusIII\NetNntp\Protocol\Client`
-  - `DariusIII\NetNntp\Protocol\ResponseCode` → `DariusIII\NetNntp\Protocol\ResponseCode`
-- Updated `composer.json` PSR-4 autoload to `"DariusIII\\NetNntp\\": "src/"`
-- Added `autoload-dev` PSR-4 entry for test namespace `"DariusIII\\NetNntp\\Tests\\": "tests/"`
-- Updated all source files, tests, docs, and examples to use new namespace
-- Added `files` autoload entry for `Responsecode.php` global constants
+- Added PHP namespaces: `Net\NNTP`, `Net\NNTP\Protocol`
+- Renamed classes from PEAR underscore style to namespaced short names:
+  - `Net_NNTP_Client` → `Net\NNTP\Client`
+  - `Net_NNTP_Error` → `Net\NNTP\Error`
+  - `Net_NNTP_Protocol_Client` → `Net\NNTP\Protocol\Client`
+- Updated `composer.json` autoload to PSR-4
 - Removed all `require_once` includes from source files (now handled by Composer autoload)
 - Removed old `NNTP/` directory
 
 **PEAR removal:**
 - Removed all PEAR dependencies, code, and references
 - Removed `PEAR_LOG_DEBUG` constant and all `_isMasked()` calls from `Protocol\Client`
-- Replaced all `PEAR::isError()` calls with `\DariusIII\NetNntp\Error::isError()` throughout
+- Replaced all `PEAR::isError()` calls with `Net\NNTP\Error::isError()` throughout
 - Removed `require_once "Log.php"` and `require_once "PEAR.php"` from demo files
 - Removed `grabPearErrors()` / `PEAR::setErrorHandling()` from demo
 - Removed `PEAR_Error` references from `Error` class
@@ -51,7 +96,7 @@ Release v4.0.0
 - Updated demo and phpdoc examples to use namespaced classes
 
 **Enums & code optimization:**
-- Created `DariusIII\NetNntp\Protocol\ResponseCode` int-backed enum with all 53 NNTP response codes
+- Created `Net\NNTP\Protocol\ResponseCode` int-backed enum with all 53 NNTP response codes
   - Each case includes a `description()` method returning the RFC description
   - Supports `ResponseCode::from(int)` and `ResponseCode::tryFrom(int)` natively
   - Added 6 new codes not previously defined: `DisconnectingRequested` (205), `DisconnectingForced` (400), `TlsContinue` (382), `TlsRefused` (580), `XgtitleFollows` (282), `XgtitleUnavailable` (481)
@@ -83,8 +128,6 @@ Release v4.0.0
 - Created `phpstan.neon` configuration at level 8 (strict)
 - All source files pass PHPStan level 8 with zero errors
 - Added proper type annotations (PHPDoc `@return`, `@param`) to all methods throughout `Protocol\Client` and `Client`
-- Typed all deprecated method parameters and return types (`getArticleRaw()`, `getHeaderRaw()`, etc.)
-- Changed `getArticle()`, `getHeader()`, `getBody()` `$implode` parameter from `bool` to `mixed` for v1.1 API backward compatibility
 - Added `@var` PHPDoc annotations to all class properties
 - Added `.phpstan-cache/` to `.gitignore`
 - Added `composer scripts`: `composer analyse`, `composer test`, `composer check`

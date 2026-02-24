@@ -60,10 +60,12 @@ final class AutoloadTest extends TestCase
         $this->assertSame('DariusIII\\NetNntp\\Protocol', $ref->getNamespaceName());
     }
 
-    public function testResponsecodeConstantsLoadedViaFilesAutoload(): void
+    public function testLegacyResponsecodeShimRemoved(): void
     {
-        // These are loaded via composer "files" autoload, not via PSR-4
-        $this->assertTrue(defined('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED'));
+        $this->assertFalse(
+            defined('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED'),
+            'Legacy global constants shim should no longer be loaded'
+        );
     }
 
     public function testPsrLogInterfaceAvailable(): void

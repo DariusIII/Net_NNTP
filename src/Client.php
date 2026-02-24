@@ -5,8 +5,6 @@ declare(strict_types=1);
 /**
  * NNTP Client — high-level API
  *
- * PHP versions 8.5 and above
- *
  * @category   Net
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
@@ -42,13 +40,6 @@ class Client extends ProtocolClient
      */
     public function connect(?string $host = null, mixed $encryption = null, ?int $port = null, ?int $timeout = null): mixed
     {
-        // v1.0.x API
-        if (\is_int($encryption)) {
-            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: connect() !', E_USER_NOTICE);
-            $port = $encryption;
-            $encryption = null;
-        }
-
         return parent::connect($host, $encryption, $port, $timeout);
     }
 
@@ -58,14 +49,6 @@ class Client extends ProtocolClient
     public function disconnect(): mixed
     {
         return parent::disconnect();
-    }
-
-    /**
-     * @deprecated Use disconnect() instead.
-     */
-    public function quit(): mixed
-    {
-        return $this->disconnect();
     }
 
     /**
@@ -167,144 +150,53 @@ class Client extends ProtocolClient
 
     /**
      * Fetch article (header + body).
-     *
-     * @param mixed $article Article number or message-id
-     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getArticle(mixed $article = null, mixed $implode = false): mixed
+    public function getArticle(mixed $article = null, bool $implode = false): mixed
     {
-        $class = null;
-
-        // v1.1.x API
-        if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getArticle() !', E_USER_NOTICE);
-            $class = $implode;
-            $implode = false;
-
-            if (!class_exists($class)) {
-                return $this->throwError("Class '$class' does not exist!");
-            }
-        }
-
         $data = $this->cmdArticle($article);
         if (Error::isError($data)) {
             return $data;
         }
 
-        if ($implode === true) {
-            $data = implode("\r\n", $data);
-        }
-
-        if ($class !== null) {
-            return new $class($data);
-        }
-
-        return $data;
+        return $implode ? implode("\r\n", $data) : $data;
     }
 
     /**
      * Fetch article header.
-     *
-     * @param mixed $article Article number or message-id
-     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getHeader(mixed $article = null, mixed $implode = false): mixed
+    public function getHeader(mixed $article = null, bool $implode = false): mixed
     {
-        $class = null;
-
-        // v1.1.x API
-        if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getHeader() !', E_USER_NOTICE);
-            $class = $implode;
-            $implode = false;
-
-            if (!class_exists($class)) {
-                return $this->throwError("Class '$class' does not exist!");
-            }
-        }
-
         $data = $this->cmdHead($article);
         if (Error::isError($data)) {
             return $data;
         }
 
-        if ($implode === true) {
-            $data = implode("\r\n", $data);
-        }
-
-        if ($class !== null) {
-            return new $class($data);
-        }
-
-        return $data;
+        return $implode ? implode("\r\n", $data) : $data;
     }
 
     /**
      * Fetch article body.
-     *
-     * @param mixed $article Article number or message-id
-     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getBody(mixed $article = null, mixed $implode = false): mixed
+    public function getBody(mixed $article = null, bool $implode = false): mixed
     {
-        $class = null;
-
-        $class = null;
-
-        // v1.1.x API
-        if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getBody() !', E_USER_NOTICE);
-            $class = $implode;
-            $implode = false;
-
-            if (!class_exists($class)) {
-                return $this->throwError("Class '$class' does not exist!");
-            }
-        }
-
         $data = $this->cmdBody($article);
         if (Error::isError($data)) {
             return $data;
         }
 
-        if ($implode === true) {
-            $data = implode("\r\n", $data);
-        }
-
-        if ($class !== null) {
-            return new $class($data);
-        }
-
-        return $data;
+        return $implode ? implode("\r\n", $data) : $data;
     }
 
     /**
      * Post a raw article to a number of groups.
+     *
+     * @param string|array<int, string> $article
      */
-    public function post(mixed $article): mixed
+    public function post(string|array $article): mixed
     {
-        // API v1.0
-        if (\func_num_args() >= 4) {
-            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: post() !', E_USER_NOTICE);
-            $groups = \func_get_arg(0);
-            $subject = \func_get_arg(1);
-            $body = \func_get_arg(2);
-            $from = \func_get_arg(3);
-            $additional = \func_get_arg(4);
-            return $this->mail($groups, $subject, $body, "From: $from\r\n" . $additional);
-        }
-
-        if (!\is_array($article) && !\is_string($article)) {
-            return $this->throwError('Article must be a string or array', null, 0);
-        }
-
         $post = $this->cmdPost();
         if (Error::isError($post)) {
             return $post;
-        }
-
-        if (is_callable($article)) {
-            $article = \call_user_func($article);
         }
 
         return $this->cmdPost2($article);
@@ -322,7 +214,7 @@ class Client extends ProtocolClient
 
         $header  = "Newsgroups: $groups\r\n";
         $header .= "Subject: $subject\r\n";
-        $header .= "X-poster: Net_NNTP v@package_version@ (@package_state@)\r\n";
+        $header .= "X-poster: Net_NNTP\r\n";
         if ($additional !== null) {
             $header .= $additional;
         }
@@ -356,49 +248,40 @@ class Client extends ProtocolClient
     /**
      * Get new groups since a date.
      */
-    public function getNewGroups(mixed $time, ?string $distributions = null): mixed
+    public function getNewGroups(int|string $time, ?string $distributions = null): mixed
     {
         $time = $this->_resolveTimestamp($time);
-        if (Error::isError($time)) {
-            return $time;
-        }
 
-        assert(\is_int($time));
         return $this->cmdNewgroups($time, $distributions);
     }
 
     /**
      * Get new articles since a date.
      */
-    public function getNewArticles(mixed $time, string $groups = '*', ?string $distribution = null): mixed
+    public function getNewArticles(int|string $time, string $groups = '*', ?string $distribution = null): mixed
     {
         $time = $this->_resolveTimestamp($time);
-        if (Error::isError($time)) {
-            return $time;
-        }
 
-        assert(\is_int($time));
         return $this->cmdNewnews($time, $groups, $distribution);
     }
 
     /**
-     * Resolve a mixed time value into a unix timestamp.
+     * Resolve a time value into a unix timestamp.
+     *
+     * @throws \InvalidArgumentException If the string cannot be parsed.
      */
-    private function _resolveTimestamp(mixed $time): int|Error
+    private function _resolveTimestamp(int|string $time): int
     {
-        if (\is_integer($time)) {
+        if (\is_int($time)) {
             return $time;
         }
 
-        if (\is_string($time)) {
-            $ts = strtotime($time);
-            if ($ts === false) {
-                return $this->throwError('$time could not be converted into a timestamp!', null, 0);
-            }
-            return $ts;
+        $ts = strtotime($time);
+        if ($ts === false) {
+            throw new \InvalidArgumentException('$time could not be converted into a timestamp!');
         }
 
-        throw new \InvalidArgumentException('$time must be either a string or an integer/timestamp!');
+        return $ts;
     }
 
     /**
@@ -421,10 +304,6 @@ class Client extends ProtocolClient
         }
 
         if ($backup === true) {
-            if ($wildmat !== null) {
-                // wildmat not supported, fall back to full list
-            }
-
             $groups2 = $this->cmdList();
             if (!Error::isError($groups2)) {
                 $groups = $groups2;
@@ -460,23 +339,6 @@ class Client extends ProtocolClient
      */
     public function getOverview(mixed $range = null, bool $_names = true, bool $_forceNames = true): mixed
     {
-        // API v1.0 compat
-        if (\func_num_args() === 2 && !\is_bool(\func_get_arg(1))) {
-            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getOverview() !', E_USER_NOTICE);
-
-            $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
-            if (Error::isError($overview)) {
-                return $overview;
-            }
-
-            $articles = [];
-            foreach ($overview as $article) {
-                $article = array_merge(['number' => array_shift($article)], $article);
-                $articles[$article['Message-ID']] = $article;
-            }
-            return $articles;
-        }
-
         $overview = $this->cmdXOver($range);
         if (Error::isError($overview)) {
             return $overview;
@@ -676,50 +538,6 @@ class Client extends ProtocolClient
     public function group(): mixed
     {
         return $this->_selectedGroupSummary['group'] ?? null;
-    }
-
-    /**
-     * @deprecated Use _isConnected() internally.
-     */
-    public function isConnected(): bool
-    {
-        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: isConnected() !', E_USER_NOTICE);
-        return parent::_isConnected();
-    }
-
-    /** @deprecated Use getArticle() */
-    public function getArticleRaw(mixed $article, mixed $implode = false): mixed
-    {
-        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getArticleRaw() !', E_USER_NOTICE);
-        return $this->getArticle($article, $implode);
-    }
-
-    /** @deprecated Use getHeader() */
-    public function getHeaderRaw(mixed $article = null, mixed $implode = false): mixed
-    {
-        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getHeaderRaw() !', E_USER_NOTICE);
-        return $this->getHeader($article, $implode);
-    }
-
-    /** @deprecated Use getBody() */
-    public function getBodyRaw(mixed $article = null, mixed $implode = false): mixed
-    {
-        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getBodyRaw() !', E_USER_NOTICE);
-        return $this->getBody($article, $implode);
-    }
-
-    /** @deprecated Use getNewArticles() */
-    public function getNewNews(mixed $time, string $groups = '*', ?string $distribution = null): mixed
-    {
-        trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getNewNews() !', E_USER_NOTICE);
-        return $this->getNewArticles($time, $groups, $distribution);
-    }
-
-    /** @deprecated Use getReferences() */
-    public function getReferencesOverview(mixed $first, mixed $last): mixed
-    {
-        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getReferencesOverview() !', E_USER_NOTICE);
-        return $this->getReferences($first . '-' . $last);
     }
 }
 
