@@ -23,7 +23,8 @@
         ]
     },
     "require": {
-		"php": ">=8.5"
+		"php": ">=8.5",
+        "psr/log": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*"

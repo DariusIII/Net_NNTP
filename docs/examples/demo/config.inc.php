@@ -70,7 +70,7 @@
 
 $frontpage = true;
 
-$loglevel = 5;  // Logger::LOG_NOTICE=5, Logger::LOG_INFO=6, Logger::LOG_DEBUG=7
+$loglevel = 5;  // 0=emergency, 1=alert, 2=critical, 3=error, 4=warning, 5=notice, 6=info, 7=debug
 $allowOverwrite = true;
 $allowPortOverwrite = false;
 

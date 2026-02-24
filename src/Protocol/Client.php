@@ -63,13 +63,14 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       https://github.com/DariusIII/Net_NNTP
+ * @link       http://pear.php.net/package/Net_NNTP
  * @see
  */
 
 namespace Net\NNTP\Protocol;
 
 use Net\NNTP\Error;
+use Psr\Log\LoggerInterface;
 
 
 // {{{ constants
@@ -142,12 +143,12 @@ class Client
     protected $_currentStatusResponse = null;
 
     /**
+     * PSR-3 compatible logger instance.
      *
-     *
-     * @var     object
+     * @var LoggerInterface|null
      * @access  protected
      */
-    protected $_logger = null;
+    protected ?LoggerInterface $_logger = null;
 
     /**
     * Contains false on non-ssl connection and string when encrypted
@@ -217,27 +218,15 @@ class Client
     // {{{ setLogger()
 
     /**
+     * Set a PSR-3 compatible logger.
      *
-     *
-     * @param  object  $logger
-     *
-     * @access protected
+     * @param  LoggerInterface  $logger
      */
-    protected function setLogger(object $logger): void
+    public function setLogger(LoggerInterface $logger): void
     {
         $this->_logger = $logger;
     }
 
-    // }}}
-    // {{{ setDebug()
-
-    /**
-     * @deprecated
-     */
-    function setDebug($debug = true): void
-    {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Protocol_Client: setDebug() ! Debugging in now automatically handled when a logger is given.', E_USER_NOTICE);
-    }
     // }}}
     // {{{ _clearOpensslErrors()
 
@@ -289,7 +278,7 @@ class Client
         // allows sending multiple commands and thereby making the communication between
         // NET_NNTP and the server out of sync...
         if (strpbrk($cmd, "\r\n") !== false) {
-            if ($this->_logger) {
+            if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
                 $this->_logger->debug('Illegal character in command: contains carriage return/new line');
             }
 
@@ -308,7 +297,7 @@ class Client
         }
 
     	//
-    	if ($this->_logger) {
+    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	    $this->_logger->debug('C: ' . $cmd);
         }
 
@@ -346,7 +335,7 @@ class Client
         }
 
     	//
-    	if ($this->_logger) {
+    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	    $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
         }
 
@@ -437,7 +426,7 @@ class Client
             }
 
     	    //
-    	    if ($this->_logger) {
+    	    if ($debug) {
     	    	$this->_logger->debug('T: ' . $line);
     	    }
 
@@ -473,7 +462,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
-    	    if ($this->_logger) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	        foreach (explode("\r\n", $article) as $line) {
     		    $this->_logger->debug('D: ' . $line);
     	        }
@@ -498,7 +487,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n");
 
     	    //
-    	    if ($this->_logger) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	        foreach (explode("\r\n", $header) as $line) {
     	    	    $this->_logger->debug('D: ' . $line);
     	    	}
@@ -517,7 +506,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
-    	    if ($this->_logger) {
+    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
     	        foreach (explode("\r\n", $body) as $line) {
     	    	    $this->_logger->debug('D: ' . $line);
     	    	}

@@ -63,7 +63,7 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C� SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       https://github.com/DariusIII/Net_NNTP
+ * @link       http://pear.php.net/package/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
@@ -73,60 +73,58 @@
 /* Setup logging */
 /*****************/
 
+use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
+
 /**
- * Standalone logger for the Net_NNTP demo.
+ * PSR-3 compatible logger for the Net_NNTP demo.
  *
- * Log levels (lower value = higher severity):
- *   0 emergency, 1 alert, 2 critical, 3 error, 4 warning, 5 notice, 6 info, 7 debug
+ * Collects log events in memory and renders them as HTML via dump().
  */
-class Logger
+class Logger extends AbstractLogger
 {
-    const LOG_EMERG   = 0;
-    const LOG_ALERT   = 1;
-    const LOG_CRIT    = 2;
-    const LOG_ERR     = 3;
-    const LOG_WARNING = 4;
-    const LOG_NOTICE  = 5;
-    const LOG_INFO    = 6;
-    const LOG_DEBUG   = 7;
+    /**
+     * Log level priority map (lower number = higher severity).
+     */
+    private const LEVEL_PRIORITY = [
+        LogLevel::EMERGENCY => 0,
+        LogLevel::ALERT     => 1,
+        LogLevel::CRITICAL  => 2,
+        LogLevel::ERROR     => 3,
+        LogLevel::WARNING   => 4,
+        LogLevel::NOTICE    => 5,
+        LogLevel::INFO      => 6,
+        LogLevel::DEBUG     => 7,
+    ];
 
     private array $_events = [];
     private int $_level;
 
-    public function __construct(int $level = self::LOG_NOTICE)
+    /**
+     * @param int $level Maximum log level to record (0-7, see LEVEL_PRIORITY values).
+     */
+    public function __construct(int $level = 5 /* notice */)
     {
         $this->_level = $level;
     }
 
-    public function log(string $message, int $priority = self::LOG_NOTICE): bool
+    /**
+     * {@inheritdoc}
+     */
+    public function log($level, string|\Stringable $message, array $context = []): void
     {
+        $priority = self::LEVEL_PRIORITY[$level] ?? 5;
+
         if ($priority > $this->_level) {
-            return false;
+            return;
         }
-        $this->_events[] = ['priority' => $priority, 'message' => $message];
-        return true;
+
+        $this->_events[] = ['priority' => $priority, 'level' => $level, 'message' => (string) $message];
     }
 
-    public function debug(string $message): void   { $this->log($message, self::LOG_DEBUG); }
-    public function info(string $message): void    { $this->log($message, self::LOG_INFO); }
-    public function notice(string $message): void  { $this->log($message, self::LOG_NOTICE); }
-    public function warning(string $message): void { $this->log($message, self::LOG_WARNING); }
-
-    private static function priorityToString(int $priority): string
-    {
-        return match ($priority) {
-            self::LOG_EMERG   => 'emergency',
-            self::LOG_ALERT   => 'alert',
-            self::LOG_CRIT    => 'critical',
-            self::LOG_ERR     => 'error',
-            self::LOG_WARNING => 'warning',
-            self::LOG_NOTICE  => 'notice',
-            self::LOG_INFO    => 'info',
-            self::LOG_DEBUG   => 'debug',
-            default           => 'unknown',
-        };
-    }
-
+    /**
+     * Render collected log events as HTML.
+     */
     public function dump(): void
     {
         if (count($this->_events) === 0) {
@@ -136,9 +134,9 @@ class Logger
         echo '<div class="debug">', "\r\n";
         echo '<p><b><u>Log:</u></b></p>';
         foreach ($this->_events as $event) {
-            $priority = self::priorityToString($event['priority']);
-            echo '<p class="', $priority, '">';
-            echo '<b>' . ucfirst($priority) . '</b>: ';
+            $level = $event['level'];
+            echo '<p class="', $level, '">';
+            echo '<b>' . ucfirst($level) . '</b>: ';
             echo nl2br(htmlspecialchars($event['message']));
             echo '</p>', "\r\n";
         }

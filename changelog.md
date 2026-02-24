@@ -1,3 +1,14 @@
+Release v2.3.0
+----------------
+- Added `psr/log` as a dependency — the library now accepts any PSR-3 compatible logger
+- Type-hinted `$_logger` property and `setLogger()` with `Psr\Log\LoggerInterface`
+- Made `setLogger()` public (was `protected`)
+- Removed deprecated `setDebug()` method from `Protocol\Client`
+- Updated demo `Logger` class to extend `Psr\Log\AbstractLogger` and implement `Psr\Log\LoggerInterface`
+
+(Released: 2026-02-24)
+
+
 Release v2.2.1
 ----------------
 - Removed all PEAR dependencies and references
