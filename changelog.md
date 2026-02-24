@@ -1,3 +1,39 @@
+Release v2.2.1
+----------------
+- Removed all PEAR dependencies and references
+- Removed `PEAR_LOG_DEBUG` constant; logger guards now check `$this->_logger` directly (PSR-3 compatible — loggers handle level filtering internally)
+- Removed `_isMasked()` PEAR Log API calls from `Protocol\Client`
+- Rewrote demo `Logger` class as a standalone implementation (no longer extends PEAR `Log`)
+- Removed `require_once "Log.php"` and `require_once "PEAR.php"` from demo files
+- Removed `grabPearErrors()` / `PEAR::setErrorHandling()` from demo logger
+- Replaced all `PEAR::isError()` calls with `\Net\NNTP\Error::isError()` in demo and phpdoc examples
+- Updated `X-poster` mail header: removed `PEAR::` prefix
+- Removed `PEAR_Error` references from `Error` class phpdoc
+- Replaced all `@link http://pear.php.net/package/Net_NNTP` with GitHub URL
+
+(Released: 2026-02-24)
+
+
+Release v2.2.0
+----------------
+- Modernized project structure to PSR-4 standard
+- Moved source files from `NNTP/` to `src/` directory
+- Added PHP namespaces: `Net\NNTP` and `Net\NNTP\Protocol`
+- Renamed classes to use short namespaced names:
+  - `Net_NNTP_Client` → `Net\NNTP\Client`
+  - `Net_NNTP_Error` → `Net\NNTP\Error`
+  - `Net_NNTP_Protocol_Client` → `Net\NNTP\Protocol\Client`
+- Updated `composer.json` autoload from classmap to PSR-4 (`"Net\\NNTP\\": "src/"`)
+- Added `files` autoload entry for `Responsecode.php` global constants
+- Removed all `require_once` includes from source files (now handled by Composer autoload)
+- Updated tests to use namespaced classes and Composer autoloader
+- Updated demo examples to use namespaced classes
+- Cleaned up `phpunit.xml` (removed deprecated attributes)
+- Removed old `NNTP/` directory
+
+(Released: 2026-02-24)
+
+
 Release v2.1.0
 ----------------
 - PHP 8.5 compatibility update

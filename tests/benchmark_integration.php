@@ -23,7 +23,7 @@ require_once __DIR__ . '/../NNTP/Client.php';
  * Environment fallback:
  * NNTP_HOST, NNTP_PORT, NNTP_ENCRYPTION, NNTP_USER, NNTP_PASS, NNTP_GROUP, NNTP_RANGE, NNTP_ITERATIONS, NNTP_TIMEOUT
  */
-final class NetNntpBenchmarkClient extends Net_NNTP_Client
+final class NetNntpBenchmarkClient extends Client
 {
     public function fetchXoverRaw(string $range): mixed
     {
@@ -33,7 +33,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
     public function fetchXoverUsingLegacyReader(string $range): mixed
     {
         $response = $this->_sendCommand('XOVER ' . $range);
-        if (Net_NNTP_Error::isError($response)) {
+        if (Error::isError($response)) {
             return $response;
         }
 
@@ -42,7 +42,7 @@ final class NetNntpBenchmarkClient extends Net_NNTP_Client
         }
 
         $data = $this->getTextResponseLegacy();
-        if (Net_NNTP_Error::isError($data)) {
+        if (Error::isError($data)) {
             return $data;
         }
 
@@ -238,7 +238,7 @@ function runBenchmark(string $name, int $iterations, callable $callback): array
         $elapsedMs = (hrtime(true) - $start) / 1_000_000;
         $times[] = $elapsedMs;
 
-        if (Net_NNTP_Error::isError($result)) {
+        if (Error::isError($result)) {
             throw new RuntimeException($name . ' failed: ' . $result->getMessage() . ' [' . $result->getCode() . ']');
         }
 
@@ -304,24 +304,24 @@ try {
         (int) $options['timeout']
     );
 
-    if (Net_NNTP_Error::isError($connected)) {
+    if (Error::isError($connected)) {
         throw new RuntimeException('Connect failed: ' . $connected->getMessage() . ' [' . $connected->getCode() . ']');
     }
 
     if (!empty($options['user'])) {
         $auth = $client->authenticate((string) $options['user'], (string) ($options['pass'] ?? ''));
-        if (Net_NNTP_Error::isError($auth)) {
+        if (Error::isError($auth)) {
             throw new RuntimeException('Authenticate failed: ' . $auth->getMessage() . ' [' . $auth->getCode() . ']');
         }
     }
 
     $groupSummary = $client->selectGroup((string) $options['group']);
-    if (Net_NNTP_Error::isError($groupSummary)) {
+    if (Error::isError($groupSummary)) {
         throw new RuntimeException('Select group failed: ' . $groupSummary->getMessage() . ' [' . $groupSummary->getCode() . ']');
     }
 
     $format = $client->getOverviewFormat(true, true);
-    if (Net_NNTP_Error::isError($format)) {
+    if (Error::isError($format)) {
         throw new RuntimeException('Failed to fetch overview format: ' . $format->getMessage() . ' [' . $format->getCode() . ']');
     }
     $format = array_merge(array('Number' => false), $format);
@@ -350,7 +350,7 @@ try {
         $iterations,
         function () use ($client, $format, $range): mixed {
             $overview = $client->fetchXoverRaw($range);
-            if (Net_NNTP_Error::isError($overview)) {
+            if (Error::isError($overview)) {
                 return $overview;
             }
 
@@ -363,7 +363,7 @@ try {
         $iterations,
         function () use ($client, $format, $range): mixed {
             $overview = $client->fetchXoverRaw($range);
-            if (Net_NNTP_Error::isError($overview)) {
+            if (Error::isError($overview)) {
                 return $overview;
             }
 

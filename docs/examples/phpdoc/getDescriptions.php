@@ -1,5 +1,5 @@
 $descriptions = $nntp->getDescriptions('*.pear.*');
-if (PEAR::isError($descriptions)) {
+if (\Net\NNTP\Error::isError($descriptions)) {
     // handle error
 }
 

@@ -63,33 +63,31 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C� SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  *
  * @filesource
  */
 
-/**
- *
- */
-require_once __DIR__.'/Protocol/Client.php';
+namespace Net\NNTP;
 
+use Net\NNTP\Protocol\Client as ProtocolClient;
 
-// {{{ Net_NNTP_Client
+// {{{ Net\NNTP\Client
 
 /**
  * Implementation of the client side of NNTP (Network News Transfer Protocol)
  *
- * The Net_NNTP_Client class is a frontend class to the Net_NNTP_Protocol_Client class.
+ * The Net\NNTP\Client class is a frontend class to the Net\NNTP\Protocol\Client class.
  *
  * @category   Net
  * @package    Net_NNTP
  * @version    package: @package_version@ (@package_state@) 
  * @version    api: @api_version@ (@api_state@)
  * @access     public
- * @see        Net_NNTP_Protocol_Client
+ * @see        Net\NNTP\Protocol\Client
  */
-class Net_NNTP_Client extends Net_NNTP_Protocol_Client
+class Client extends ProtocolClient
 {
     // {{{ properties
 
@@ -146,14 +144,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (bool)	True when posting allowed, otherwise false
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::disconnect()
-     * @see Net_NNTP_Client::authenticate()
+     * @see Net\NNTP\Client::disconnect()
+     * @see Net\NNTP\Client::authenticate()
      */
     public function connect(?string $host = null, mixed $encryption = null, ?int $port = null, ?int $timeout = null): mixed
     {
     	// v1.0.x API
     	if (\is_int($encryption)) {
-	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: connect() !', E_USER_NOTICE);
+	    trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: connect() !', E_USER_NOTICE);
     	    $port = $encryption;
 	    $encryption = null;
     	}
@@ -171,7 +169,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (bool)	
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::connect()
+     * @see Net\NNTP\Client::connect()
      */
     public function disconnect(): mixed
     {
@@ -215,7 +213,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
 	 *  - (bool)    True on successful authentification, otherwise false
 	 *  - (object)    Pear_Error on failure
 	 * @access public
-	 * @see Net_NNTP_Client::connect()
+	 * @see Net\NNTP\Client::connect()
 	 */
     public function authenticate(?string $user, string $pass): mixed
     {
@@ -251,11 +249,11 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (array)	Summary about the selected group 
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getGroups()
-     * @see Net_NNTP_Client::group()
-     * @see Net_NNTP_Client::first()
-     * @see Net_NNTP_Client::last()
-     * @see Net_NNTP_Client::count()
+     * @see Net\NNTP\Client::getGroups()
+     * @see Net\NNTP\Client::group()
+     * @see Net\NNTP\Client::first()
+     * @see Net\NNTP\Client::last()
+     * @see Net\NNTP\Client::count()
      */
     public function selectGroup(string $group, mixed $articles = false): mixed
     {
@@ -308,8 +306,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (bool)	False if no prevoius article exists
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::selectArticle()
-     * @see Net_NNTP_Client::selectNextArticle()
+     * @see Net\NNTP\Client::selectArticle()
+     * @see Net\NNTP\Client::selectNextArticle()
      */
     public function selectPreviousArticle(int $_ret = 0): mixed
     {
@@ -347,8 +345,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (bool)	False if no further articles exist
      *  - (object)	Pear_Error on unexpected failure
      * @access public
-     * @see Net_NNTP_Client::selectArticle()
-     * @see Net_NNTP_Client::selectPreviousArticle()
+     * @see Net\NNTP\Client::selectArticle()
+     * @see Net\NNTP\Client::selectPreviousArticle()
      */
     public function selectNextArticle(int $_ret = 0): mixed
     {
@@ -386,8 +384,8 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (bool)	False if article doesn't exists
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::selectNextArticle()
-     * @see Net_NNTP_Client::selectPreviousArticle()
+     * @see Net\NNTP\Client::selectNextArticle()
+     * @see Net\NNTP\Client::selectPreviousArticle()
      */
     public function selectArticle(mixed $article = null, int $_ret = 0): mixed
     {
@@ -429,14 +427,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (string)	Complete article (when $implode is true)
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getBody()
+     * @see Net\NNTP\Client::getHeader()
+     * @see Net\NNTP\Client::getBody()
      */
     public function getArticle(mixed $article = null, bool $implode = false): mixed
     {
     	// v1.1.x API
     	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+    	    trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
     	    $implode = false;
@@ -488,14 +486,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (string)	Header fields (when $implode is true)
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getArticle()
-     * @see Net_NNTP_Client::getBody()
+     * @see Net\NNTP\Client::getArticle()
+     * @see Net\NNTP\Client::getBody()
      */
     public function getHeader(mixed $article = null, bool $implode = false): mixed
     {
     	// v1.1.x API
     	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+    	    trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
     	    $implode = false;
@@ -547,14 +545,14 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
      *  - (string)	Message body (when $implode is true)
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getHeader()
-     * @see Net_NNTP_Client::getArticle()
+     * @see Net\NNTP\Client::getHeader()
+     * @see Net\NNTP\Client::getArticle()
      */
     public function getBody(mixed $article = null, bool $implode = false)
     {
     	// v1.1.x API
     	if (\is_string($implode)) {
-    	    trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getHeader() !', E_USER_NOTICE);
+    	    trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getHeader() !', E_USER_NOTICE);
 		     
     	    $class = $implode;
     	    $implode = false;
@@ -608,7 +606,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
     	if (\func_num_args() >= 4) {
 
     	    // 
-    	    trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: post() !', E_USER_NOTICE);
+    	    trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: post() !', E_USER_NOTICE);
 
     	    //
     	    $groups = \func_get_arg(0);
@@ -678,7 +676,7 @@ class Net_NNTP_Client extends Net_NNTP_Protocol_Client
         // Construct header
         $header  = "Newsgroups: $groups\r\n";
         $header .= "Subject: $subject\r\n";
-        $header .= "X-poster: PEAR::Net_NNTP v@package_version@ (@package_state@)\r\n";
+        $header .= "X-poster: Net_NNTP v@package_version@ (@package_state@)\r\n";
     	if ($additional !== null) {
     	    $header .= $additional;
     	}
@@ -828,8 +826,8 @@ case \is_integer($time):
      *  - (array)	Nested array with information about every valid group
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getDescriptions()
-     * @see Net_NNTP_Client::selectGroup()
+     * @see Net\NNTP\Client::getDescriptions()
+     * @see Net\NNTP\Client::selectGroup()
      */
     public function getGroups(mixed $wildmat = null): mixed
     {
@@ -894,7 +892,7 @@ case \is_integer($time):
      *  - (array)	Associated array with descriptions of known groups
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getGroups()
+     * @see Net\NNTP\Client::getGroups()
      */
     public function getDescriptions(mixed $wildmat = null): mixed
     {
@@ -954,8 +952,8 @@ case \is_integer($time):
      *  - (array)	Nested array of article overview data
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getHeaderField()
-     * @see Net_NNTP_Client::getOverviewFormat()
+     * @see Net\NNTP\Client::getHeaderField()
+     * @see Net\NNTP\Client::getOverviewFormat()
      */
     public function getOverview(mixed $range = null, bool $_names = true, bool $_forceNames = true): mixed
     {
@@ -970,7 +968,7 @@ case \is_integer($time):
 
 	    default:
     	    	// 
-    	        trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getOverview() !', E_USER_NOTICE);
+    	        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getOverview() !', E_USER_NOTICE);
 
     	        // Fetch overview via API v1.3
     	        $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
@@ -1084,7 +1082,7 @@ case \is_integer($time):
      *  - (array)	Overview field names
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getOverview()
+     * @see Net\NNTP\Client::getOverview()
      */
     public function getOverviewFormat(bool $_forceNames = true, bool $_full = false): mixed
     {
@@ -1138,8 +1136,8 @@ case \is_integer($time):
      *  - (array)	Nested array of 
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getOverview()
-     * @see Net_NNTP_Client::getReferences()
+     * @see Net\NNTP\Client::getOverview()
+     * @see Net\NNTP\Client::getReferences()
      */
     public function getHeaderField(string $field, mixed $range = null): mixed
     {
@@ -1242,7 +1240,7 @@ case \is_integer($time):
      *  - (array)	Nested array of references
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::getHeaderField()
+     * @see Net\NNTP\Client::getHeaderField()
      */
     public function getReferences(mixed $range = null): mixed
     {
@@ -1322,10 +1320,10 @@ case \is_integer($time):
      *  - (string)	the number of article in group
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::group()
-     * @see Net_NNTP_Client::first()
-     * @see Net_NNTP_Client::last()
-     * @see Net_NNTP_Client::selectGroup()
+     * @see Net\NNTP\Client::group()
+     * @see Net\NNTP\Client::first()
+     * @see Net\NNTP\Client::last()
+     * @see Net\NNTP\Client::selectGroup()
      * @ignore
      */
     public function count(): mixed
@@ -1346,10 +1344,10 @@ case \is_integer($time):
      *  - (string)	the last article's number
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::first()
-     * @see Net_NNTP_Client::group()
-     * @see Net_NNTP_Client::count()
-     * @see Net_NNTP_Client::selectGroup()
+     * @see Net\NNTP\Client::first()
+     * @see Net\NNTP\Client::group()
+     * @see Net\NNTP\Client::count()
+     * @see Net\NNTP\Client::selectGroup()
      * @ignore
      */
     public function last(): mixed
@@ -1370,10 +1368,10 @@ case \is_integer($time):
      *  - (string)	the first article's number
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::last()
-     * @see Net_NNTP_Client::group()
-     * @see Net_NNTP_Client::count()
-     * @see Net_NNTP_Client::selectGroup()
+     * @see Net\NNTP\Client::last()
+     * @see Net\NNTP\Client::group()
+     * @see Net\NNTP\Client::count()
+     * @see Net\NNTP\Client::selectGroup()
      * @ignore
      */
     public function first(): mixed
@@ -1394,10 +1392,10 @@ case \is_integer($time):
      *  - (string)	group name
      *  - (object)	Pear_Error on failure
      * @access public
-     * @see Net_NNTP_Client::first()
-     * @see Net_NNTP_Client::last()
-     * @see Net_NNTP_Client::count()
-     * @see Net_NNTP_Client::selectGroup()
+     * @see Net\NNTP\Client::first()
+     * @see Net\NNTP\Client::last()
+     * @see Net\NNTP\Client::count()
+     * @see Net\NNTP\Client::selectGroup()
      * @ignore
      */
     public function group(): mixed
@@ -1420,14 +1418,14 @@ case \is_integer($time):
      *
      * @return bool	True if connected, otherwise false
      * @access public
-     * @see Net_NNTP_Client::connect()
-     * @see Net_NNTP_Client::quit()
-     * @deprecated	since v1.3.0 due to use of protected method: Net_NNTP_Protocol_Client::isConnected()
+     * @see Net\NNTP\Client::connect()
+     * @see Net\NNTP\Client::quit()
+     * @deprecated	since v1.3.0 due to use of protected method: Net\NNTP\Protocol\Client::isConnected()
      * @ignore
      */
     public function isConnected(): bool
     {
-	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: isConnected() !', E_USER_NOTICE);
+	trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: isConnected() !', E_USER_NOTICE);
         return parent::_isConnected();
     }
 
@@ -1442,7 +1440,7 @@ case \is_integer($time):
      */
     public function getArticleRaw($article, $implode = false)
     {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getArticleRaw() !', E_USER_NOTICE);
+    	trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getArticleRaw() !', E_USER_NOTICE);
     	return $this->getArticle($article, $implode);
     }
 
@@ -1457,7 +1455,7 @@ case \is_integer($time):
      */
     public function getHeaderRaw($article = null, $implode = false)
     {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getHeaderRaw() !', E_USER_NOTICE);
+    	trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getHeaderRaw() !', E_USER_NOTICE);
     	return $this->getHeader($article, $implode);
     }
 
@@ -1472,7 +1470,7 @@ case \is_integer($time):
      */
     public function getBodyRaw($article = null, $implode = false)
     {
-    	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getBodyRaw() !', E_USER_NOTICE);
+    	trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getBodyRaw() !', E_USER_NOTICE);
         return $this->getBody($article, $implode);
     }
 
@@ -1487,7 +1485,7 @@ case \is_integer($time):
      */
     public function getNewNews($time, $groups = '*', $distribution = null)
     {
-    	trigger_error('You are using deprecated API v1.1 in Net_NNTP_Client: getNewNews() !', E_USER_NOTICE);
+    	trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getNewNews() !', E_USER_NOTICE);
     	return $this->getNewArticles($time, $groups, $distribution);
     }
 
@@ -1502,7 +1500,7 @@ case \is_integer($time):
      */
     public function getReferencesOverview($first, $last)
     {
-	trigger_error('You are using deprecated API v1.0 in Net_NNTP_Client: getReferencesOverview() !', E_USER_NOTICE);
+	trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getReferencesOverview() !', E_USER_NOTICE);
     	return $this->getReferences($first . '-' . $last);
     }
 

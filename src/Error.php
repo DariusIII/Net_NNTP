@@ -2,7 +2,7 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 
 /**
- * Net_NNTP Error class - replaces PEAR_Error dependency
+ * Net_NNTP Error class
  *
  * PHP versions 8.5 and above
  *
@@ -12,18 +12,20 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  */
 
+namespace Net\NNTP;
+
 /**
- * Net_NNTP_Error class
+ * Error class
  *
- * A lightweight error class that replaces PEAR_Error for error handling.
+ * A lightweight error class for error handling.
  *
  * @category   Net
  * @package    Net_NNTP
  */
-class Net_NNTP_Error
+class Error
 {
     /**
      * Error message
@@ -91,14 +93,14 @@ class Net_NNTP_Error
     }
 
     /**
-     * Check if a value is a Net_NNTP_Error instance
+     * Check if a value is an Error instance
      *
      * @param mixed $data The value to check
-     * @return bool True if $data is a Net_NNTP_Error instance
+     * @return bool True if $data is an Error instance
      */
     public static function isError(mixed $data): bool
     {
-        return $data instanceof Net_NNTP_Error;
+        return $data instanceof Error;
     }
 
     /**
@@ -108,7 +110,7 @@ class Net_NNTP_Error
      */
     public function __toString(): string
     {
-        $str = \get_class($this) . ': ' . $this->message;
+        $str = static::class . ': ' . $this->message;
         if ($this->code !== null) {
             $str .= ' (code: ' . $this->code . ')';
         }

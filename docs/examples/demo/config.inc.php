@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,16 +61,16 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3Cï¿½ SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
 
 $frontpage = true;
 
-$loglevel = 5;  // PEAR_LOG_NOTICE = 5 ; PEAR_LOG_INFO = 6 ; PEAR_LOG_DEBUG = 7
+$loglevel = 5;  // Logger::LOG_NOTICE=5, Logger::LOG_INFO=6, Logger::LOG_DEBUG=7
 $allowOverwrite = true;
 $allowPortOverwrite = false;
 

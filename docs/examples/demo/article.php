@@ -63,7 +63,7 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
@@ -118,7 +118,7 @@ if ($messageID !== null) {
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (PEAR::isError($posting)) {
+if (\Net\NNTP\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
@@ -126,7 +126,7 @@ if (PEAR::isError($posting)) {
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (PEAR::isError($R)) {
+    if (\Net\NNTP\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -134,7 +134,7 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (PEAR::isError($authenticated)) {
+    if (\Net\NNTP\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
@@ -144,13 +144,13 @@ if ($messageID === null) {
 
     // Select group
     $summary = $nntp->selectGroup($group);
-    if (PEAR::isError($summary)) {
+    if (\Net\NNTP\Error::isError($summary)) {
         error($summary->getMessage());
     }
 
     // Select article
     $article = $nntp->selectArticle($article);
-    if (PEAR::isError($article)) {
+    if (\Net\NNTP\Error::isError($article)) {
         error($article->getMessage());
     }
 
@@ -160,7 +160,7 @@ if ($messageID === null) {
 
     // Fetch overview
     $overview = $nntp->getOverview();
-    if (PEAR::isError($overview)) {
+    if (\Net\NNTP\Error::isError($overview)) {
         $logger->warning('Error fetching overview (Server response: ' . $overview->getMessage() . ')');
 
     	// 
@@ -169,7 +169,7 @@ if ($messageID === null) {
 
     // Fetch 'Newsgroups' header field
     $groups = $nntp->getHeaderField('Newsgroups');
-    if (PEAR::isError($groups)) {
+    if (\Net\NNTP\Error::isError($groups)) {
         $logger->warning('Error fetching \'Newsgroups\' header field (Server response: ' . $groups->getMessage() . ')');
 
    	// 
@@ -180,7 +180,7 @@ if ($messageID === null) {
 
 // Fetch header
 $header = $nntp->getHeader($messageID);
-if (PEAR::isError($header)) {
+if (\Net\NNTP\Error::isError($header)) {
     error('Error fetching header (Server response: ', $header->getMessage(), ')');
 }
 if ($header === false) {
@@ -191,7 +191,7 @@ if ($header === false) {
 
 // Fetch body
 $body = $nntp->getBody($messageID);
-if (PEAR::isError($body)) {
+if (\Net\NNTP\Error::isError($body)) {
     error('Error fetching body (Server response: ', $body->getMessage(), ')');
 }
 

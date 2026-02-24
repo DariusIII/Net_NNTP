@@ -1,5 +1,7 @@
 <?php
 
+use Net\NNTP\Client;
+
 class Basics
 	extends PHPUnit\Framework\TestCase
 {
@@ -23,8 +25,8 @@ class Basics
      */
     function test_Create()
     {
-		self::$nntp = new \Net_NNTP_Client();
-		$this->assertTrue(self::$nntp instanceof \Net_NNTP_Client);
+		self::$nntp = new Client();
+		$this->assertTrue(self::$nntp instanceof Client);
     }
 
 	/**

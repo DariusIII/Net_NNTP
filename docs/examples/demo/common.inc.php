@@ -9,7 +9,7 @@
  * <pre>
  * +-----------------------------------------------------------------------+
  * |                                                                       |
- * | W3C® SOFTWARE NOTICE AND LICENSE                                      |
+ * | W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                      |
  * | http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231   |
  * |                                                                       |
  * | This work (and included software, documentation such as READMEs,      |
@@ -61,9 +61,9 @@
  * @package    Net_NNTP
  * @author     Heino H. Gehlsen <heino@gehlsen.dk>
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
- * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
+ * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3Cï¿½ SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
@@ -73,144 +73,86 @@
 /* Setup logging */
 /*****************/
 
-//
-require_once "Log.php";
-
 /**
+ * Standalone logger for the Net_NNTP demo.
  *
+ * Log levels (lower value = higher severity):
+ *   0 emergency, 1 alert, 2 critical, 3 error, 4 warning, 5 notice, 6 info, 7 debug
  */
-class Logger extends Log
+class Logger
 {
-    var $_events = array();
+    const LOG_EMERG   = 0;
+    const LOG_ALERT   = 1;
+    const LOG_CRIT    = 2;
+    const LOG_ERR     = 3;
+    const LOG_WARNING = 4;
+    const LOG_NOTICE  = 5;
+    const LOG_INFO    = 6;
+    const LOG_DEBUG   = 7;
 
-    function __construct($name = '', $ident = '', $conf = null,
-                 $level = PEAR_LOG_NOTICE)
+    private array $_events = [];
+    private int $_level;
+
+    public function __construct(int $level = self::LOG_NOTICE)
     {
-        $this->_id = md5(microtime());
-        $this->_ident = $ident;
-        $this->_mask = Log::UPTO($level);
+        $this->_level = $level;
     }
 
-    function Logger($name = '', $ident = '', $conf = null,
-                 $level = PEAR_LOG_NOTICE)
+    public function log(string $message, int $priority = self::LOG_NOTICE): bool
     {
-        $this->__construct($name, $ident, $conf, $level);
-    }
-
-    function log($message, $priority = null)
-    {
-        /* If a priority hasn't been specified, use the default value. */
-        if ($priority === null) {
-            $priority = $this->_priority;
-        }
-
-        /* Abort early if the priority is above the maximum logging level. */
-        if (!$this->_isMasked($priority)) {
+        if ($priority > $this->_level) {
             return false;
         }
-
-        /* Extract the string representation of the message. */
-        $message = $this->_extractMessage($message);
-
-	/*  */
-        $this->_events[] = array('priority' => $priority, 'message' => $message);
-
-        /* Notify observers about this log message. */
-        $this->_announce(array('priority' => $priority, 'message' => $message));
-
+        $this->_events[] = ['priority' => $priority, 'message' => $message];
         return true;
     }
 
-    function dump()
+    public function debug(string $message): void   { $this->log($message, self::LOG_DEBUG); }
+    public function info(string $message): void    { $this->log($message, self::LOG_INFO); }
+    public function notice(string $message): void  { $this->log($message, self::LOG_NOTICE); }
+    public function warning(string $message): void { $this->log($message, self::LOG_WARNING); }
+
+    private static function priorityToString(int $priority): string
     {
-    	if (count($this->_events) == 0) {
-    	    return;
-    	}
-    	
-        echo '<div class="debug">', "\r\n";
-    	echo '<p><b><u>Log:</u></b></p>';
-        foreach ($this->_events as $event) {
-	    $priority = Log::priorityToString($event['priority']);
-	    
-    	    echo '<p class="', $priority , '">';
-    	    echo '<b>' . ucfirst($priority) . '</b>: ';
-    	    echo nl2br(htmlspecialchars($event['message']));
-    	    echo '</p>', "\r\n";
-    	}
-        echo '</div>', "\r\n";
+        return match ($priority) {
+            self::LOG_EMERG   => 'emergency',
+            self::LOG_ALERT   => 'alert',
+            self::LOG_CRIT    => 'critical',
+            self::LOG_ERR     => 'error',
+            self::LOG_WARNING => 'warning',
+            self::LOG_NOTICE  => 'notice',
+            self::LOG_INFO    => 'info',
+            self::LOG_DEBUG   => 'debug',
+            default           => 'unknown',
+        };
     }
 
-    function grabPearErrors()
+    public function dump(): void
     {
-    	require_once "PEAR.php";
-
-	PEAR::setErrorHandling(PEAR_ERROR_CALLBACK, array(&$this, 'errorHandler'));
-    }
-
-    function errorHandler($error)
-    {
-        global $logger;
-	
-    	if (!isset($logger)) {
-    	    return;
-    	}
-
-		$message = '';
-		
-        foreach ($error->backtrace as $X) {
-            if (substr($X['class'], 0, 4) == 'PEAR') {
-    	        continue;
-            }
-
-            $message .= get_class($error) . ': "' . $error->getMessage() . '"';
-
-            if ($code = $error->getCode()) {
-                $message .= ' (' . $error->getCode(). ')';
-            }
-
-            $message .= ' thrown by ';
-
-            if (isset($X['class'])) {
-                $message .= $X['class'] . '::';
-            }
-
-            $message .= $X['function'] . '(';
-	
-            for ($args = $X['args'], $i = 0; isset($args[$i]); ) {
-                $arg = $args[$i];
-
-                switch (true) {
-            	    case is_null($arg):   $message .= 'null'; break;
-            	    case is_string($arg): $message .= "'" . $arg . "'"; break;
-            	    case is_int($arg):    $message .= (int) $arg; break;
-            	    case is_bool($arg):   $message .= $arg ? 'true' : 'false'; break;
-            	    default:              $message .= $arg;
-            	}
-
-            	if (!isset($args[++$i])) {
-            	    break;
-            	}
-    
-            	$message .= ', ';
-            }
-    	
-            $message .= ')';
-            break;	
+        if (count($this->_events) === 0) {
+            return;
         }
 
-        $logger->log($message, PEAR_LOG_NOTICE);
+        echo '<div class="debug">', "\r\n";
+        echo '<p><b><u>Log:</u></b></p>';
+        foreach ($this->_events as $event) {
+            $priority = self::priorityToString($event['priority']);
+            echo '<p class="', $priority, '">';
+            echo '<b>' . ucfirst($priority) . '</b>: ';
+            echo nl2br(htmlspecialchars($event['message']));
+            echo '</p>', "\r\n";
+        }
+        echo '</div>', "\r\n";
     }
-
 }
-					       
+
 // Register connection input parameters
 if ($allowOverwrite) {
-    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? $_GET['loglevel'] : $loglevel;
+    $loglevel = isset($_GET['loglevel']) && !empty($_GET['loglevel']) ? (int) $_GET['loglevel'] : $loglevel;
 }
 
 //
-$logger = new Logger(null, null, null, $loglevel);
-$logger->grabPearErrors();
+$logger = new Logger($loglevel);
 
 
 
@@ -220,10 +162,10 @@ $logger->grabPearErrors();
 /********************/
 
 //
-require_once 'Net/NNTP/Client.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 //
-$nntp = new Net_NNTP_Client();
+$nntp = new \Net\NNTP\Client();
 
 // Use logger object as logger in NNTP client
 $nntp->setLogger($logger);

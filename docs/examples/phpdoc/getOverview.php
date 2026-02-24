@@ -1,7 +1,7 @@
 // Detches single article
 $overview = $nntp->getOverview(5);
 $overview = $nntp->getOverview('<Message-ID>');
-if (PEAR::isError($overview)) {
+if (\Net\NNTP\Error::isError($overview)) {
     // handle error
 }
 
@@ -15,7 +15,7 @@ echo 'Date: ',    $overview['Date'],    "\r\n";
 $overview = $nntp->getOverview();
 $overview = $nntp->getOverview('5-');
 $overview = $nntp->getOverview('5-9');
-if (PEAR::isError($overview)) {
+if (\Net\NNTP\Error::isError($overview)) {
     // handle error
 }
 

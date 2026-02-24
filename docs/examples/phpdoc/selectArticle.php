@@ -1,10 +1,10 @@
 $groupsummary = $nntp->selectGroup('php.pear.general');
-if (PEAR::isError($groupsummary)) {
+if (\Net\NNTP\Error::isError($groupsummary)) {
     // handle error
 }
 
 $article = $nntp->selectArticle(5);
-if (PEAR::isError($article)) {
+if (\Net\NNTP\Error::isError($article)) {
     // handle error
 }
 

@@ -1,5 +1,5 @@
 $article = $nntp->selectPreviousArticle();
-if (PEAR::isError($article)) {
+if (\Net\NNTP\Error::isError($article)) {
     // handle error
 }
 

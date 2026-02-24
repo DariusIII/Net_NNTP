@@ -15,8 +15,11 @@
         "source": "https://github.com/DariusIII/Net_NNTP"
     },
     "autoload": {
-        "classmap": [
-            "./"
+        "psr-4": {
+            "Net\\NNTP\\": "src/"
+        },
+        "files": [
+            "src/Protocol/Responsecode.php"
         ]
     },
     "require": {

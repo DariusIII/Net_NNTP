@@ -1,5 +1,5 @@
 $authenticated = $nntp->authenticate('somebody', 'secret');
-if (PEAR::isError($authenticated)) {
+if (\Net\NNTP\Error::isError($authenticated)) {
     // handle error
 }
 

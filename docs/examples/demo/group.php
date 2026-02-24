@@ -63,7 +63,7 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
@@ -97,7 +97,7 @@ $breadcrumbs['group: ' . $group] = null;
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (PEAR::isError($posting)) {
+if (\Net\NNTP\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
@@ -105,7 +105,7 @@ if (PEAR::isError($posting)) {
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (PEAR::isError($R)) {
+    if (\Net\NNTP\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -113,7 +113,7 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (PEAR::isError($authenticated)) {
+    if (\Net\NNTP\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
@@ -121,7 +121,7 @@ if (!is_null($user) && !is_null($pass)) {
 
 // Select group
 $summary = $nntp->selectGroup($group);
-if (PEAR::isError($summary)) {
+if (\Net\NNTP\Error::isError($summary)) {
     error($summary->getMessage());
 }
 
@@ -139,7 +139,7 @@ if (!$useRange) {
          break;
     }
     $dummy = $nntp->selectArticle($article);
-    if (PEAR::isError($dummy)) {
+    if (\Net\NNTP\Error::isError($dummy)) {
         error($dummy->getMessage());
     }
 
@@ -153,7 +153,7 @@ if (!$useRange) {
         $dummy = $nntp->selectPreviousArticle();
          break;
     }
-    if (PEAR::isError($dummy)) {
+    if (\Net\NNTP\Error::isError($dummy)) {
         error($dummy->getMessage());
     }
 
@@ -172,7 +172,7 @@ if (!$useRange) {
 
         // Fetch overview for currently selected article
         $overview = $nntp->getOverview();
-        if (PEAR::isError($overview)) {
+        if (\Net\NNTP\Error::isError($overview)) {
             error($overview->getMessage());
         }
 
@@ -190,7 +190,7 @@ if (!$useRange) {
         } else {
             $article = $nntp->selectPreviousArticle();
         }
-        if (PEAR::isError($article)) {
+        if (\Net\NNTP\Error::isError($article)) {
             error($article->getMessage());
         }
 
@@ -217,7 +217,7 @@ if (!$useRange) {
         error('bad input!');
     }
     $articles = $nntp->getOverview($range);
-    if (PEAR::isError($articles)) {
+    if (\Net\NNTP\Error::isError($articles)) {
         error($articles->getMessage());
     }
 }

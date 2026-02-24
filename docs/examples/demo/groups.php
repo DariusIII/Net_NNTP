@@ -63,7 +63,7 @@
  * @copyright  2002-2017 Heino H. Gehlsen <heino@gehlsen.dk>. All Rights Reserved.
  * @license    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231 W3C® SOFTWARE NOTICE AND LICENSE
  * @version    SVN: $Id$
- * @link       http://pear.php.net/package/Net_NNTP
+ * @link       https://github.com/DariusIII/Net_NNTP
  * @see        
  * @since      File available since release 1.3.0
  */
@@ -87,14 +87,14 @@ $breadcrumbs['Groups @ ' . ($host == null ? 'localhost' : $host)] = null;
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (PEAR::isError($posting)) {
+if (\Net\NNTP\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (PEAR::isError($R)) {
+    if (\Net\NNTP\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -102,20 +102,20 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (PEAR::isError($authenticated)) {
+    if (\Net\NNTP\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
 
 // Fetch list of groups
 $groups = $nntp->getGroups($wildmat);
-if (PEAR::isError($groups)) {
+if (\Net\NNTP\Error::isError($groups)) {
     error('Fetching list of groups failed: ' . $groups->getMessage());
 }
 
 // Fetch known (to the server) group descriptions
 $descriptions = $nntp->getDescriptions($wildmat);
-if (PEAR::isError($descriptions)) {
+if (\Net\NNTP\Error::isError($descriptions)) {
     $logger->notice('Fetching group descriptions failes: ' . $descriptions->getMessage());
 
     //
