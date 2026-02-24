@@ -1,5 +1,5 @@
 $article = $nntp->selectPreviousArticle();
-if (\Net\NNTP\Error::isError($article)) {
+if (\DariusIII\NetNntp\Error::isError($article)) {
     // handle error
 }
 

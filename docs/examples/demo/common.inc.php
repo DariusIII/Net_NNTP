@@ -161,7 +161,7 @@ $logger = new Logger($loglevel);
 
 
 //
-$nntp = new \Net\NNTP\Client();
+$nntp = new \DariusIII\NetNntp\Client();
 
 // Use logger object as logger in NNTP client
 $nntp->setLogger($logger);

@@ -1,5 +1,5 @@
 $groupsummary = $nntp->selectGroup('php.pear.general');
-if (\Net\NNTP\Error::isError($groupsummary)) {
+if (\DariusIII\NetNntp\Error::isError($groupsummary)) {
     // handle error
 }
 

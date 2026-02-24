@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Tests\Unit;
+namespace DariusIII\NetNntp\Tests\Unit;
 
-use Net\NNTP\Protocol\ResponseCode;
+use DariusIII\NetNntp\Protocol\ResponseCode;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Tests\Unit;
+namespace DariusIII\NetNntp\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 
@@ -13,51 +13,51 @@ final class AutoloadTest extends TestCase
 {
     public function testClientClassAutoloads(): void
     {
-        $this->assertTrue(class_exists(\Net\NNTP\Client::class));
+        $this->assertTrue(class_exists(\DariusIII\NetNntp\Client::class));
     }
 
     public function testErrorClassAutoloads(): void
     {
-        $this->assertTrue(class_exists(\Net\NNTP\Error::class));
+        $this->assertTrue(class_exists(\DariusIII\NetNntp\Error::class));
     }
 
     public function testProtocolClientClassAutoloads(): void
     {
-        $this->assertTrue(class_exists(\Net\NNTP\Protocol\Client::class));
+        $this->assertTrue(class_exists(\DariusIII\NetNntp\Protocol\Client::class));
     }
 
     public function testClientNamespace(): void
     {
-        $ref = new \ReflectionClass(\Net\NNTP\Client::class);
-        $this->assertSame('Net\\NNTP', $ref->getNamespaceName());
+        $ref = new \ReflectionClass(\DariusIII\NetNntp\Client::class);
+        $this->assertSame('DariusIII\\NetNntp', $ref->getNamespaceName());
     }
 
     public function testErrorNamespace(): void
     {
-        $ref = new \ReflectionClass(\Net\NNTP\Error::class);
-        $this->assertSame('Net\\NNTP', $ref->getNamespaceName());
+        $ref = new \ReflectionClass(\DariusIII\NetNntp\Error::class);
+        $this->assertSame('DariusIII\\NetNntp', $ref->getNamespaceName());
     }
 
     public function testProtocolClientNamespace(): void
     {
-        $ref = new \ReflectionClass(\Net\NNTP\Protocol\Client::class);
-        $this->assertSame('Net\\NNTP\\Protocol', $ref->getNamespaceName());
+        $ref = new \ReflectionClass(\DariusIII\NetNntp\Protocol\Client::class);
+        $this->assertSame('DariusIII\\NetNntp\\Protocol', $ref->getNamespaceName());
     }
 
     public function testClientExtendsProtocolClient(): void
     {
-        $this->assertTrue(is_subclass_of(\Net\NNTP\Client::class, \Net\NNTP\Protocol\Client::class));
+        $this->assertTrue(is_subclass_of(\DariusIII\NetNntp\Client::class, \DariusIII\NetNntp\Protocol\Client::class));
     }
 
     public function testResponseCodeEnumAutoloads(): void
     {
-        $this->assertTrue(enum_exists(\Net\NNTP\Protocol\ResponseCode::class));
+        $this->assertTrue(enum_exists(\DariusIII\NetNntp\Protocol\ResponseCode::class));
     }
 
     public function testResponseCodeEnumNamespace(): void
     {
-        $ref = new \ReflectionEnum(\Net\NNTP\Protocol\ResponseCode::class);
-        $this->assertSame('Net\\NNTP\\Protocol', $ref->getNamespaceName());
+        $ref = new \ReflectionEnum(\DariusIII\NetNntp\Protocol\ResponseCode::class);
+        $this->assertSame('DariusIII\\NetNntp\\Protocol', $ref->getNamespaceName());
     }
 
     public function testResponsecodeConstantsLoadedViaFilesAutoload(): void

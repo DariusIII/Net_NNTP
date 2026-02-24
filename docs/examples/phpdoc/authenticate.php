@@ -1,5 +1,5 @@
 $authenticated = $nntp->authenticate('somebody', 'secret');
-if (\Net\NNTP\Error::isError($authenticated)) {
+if (\DariusIII\NetNntp\Error::isError($authenticated)) {
     // handle error
 }
 

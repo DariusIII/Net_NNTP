@@ -3,12 +3,14 @@ Release v4.0.0
 
 **Project structure & namespaces:**
 - Modernized project to PSR-4 standard — source files moved from `NNTP/` to `src/`
-- Added PHP namespaces: `Net\NNTP`, `Net\NNTP\Protocol`
-- Renamed classes from PEAR underscore style to namespaced short names:
-  - `Net_NNTP_Client` → `Net\NNTP\Client`
-  - `Net_NNTP_Error` → `Net\NNTP\Error`
-  - `Net_NNTP_Protocol_Client` → `Net\NNTP\Protocol\Client`
-- Updated `composer.json` autoload from classmap to PSR-4 (`"Net\\NNTP\\": "src/"`)
+- Renamed root namespace from `Net\NNTP` to `DariusIII\NetNntp`:
+  - `DariusIII\NetNntp\Client` → `DariusIII\NetNntp\Client`
+  - `DariusIII\NetNntp\Error` → `DariusIII\NetNntp\Error`
+  - `DariusIII\NetNntp\Protocol\Client` → `DariusIII\NetNntp\Protocol\Client`
+  - `DariusIII\NetNntp\Protocol\ResponseCode` → `DariusIII\NetNntp\Protocol\ResponseCode`
+- Updated `composer.json` PSR-4 autoload to `"DariusIII\\NetNntp\\": "src/"`
+- Added `autoload-dev` PSR-4 entry for test namespace `"DariusIII\\NetNntp\\Tests\\": "tests/"`
+- Updated all source files, tests, docs, and examples to use new namespace
 - Added `files` autoload entry for `Responsecode.php` global constants
 - Removed all `require_once` includes from source files (now handled by Composer autoload)
 - Removed old `NNTP/` directory
@@ -16,7 +18,7 @@ Release v4.0.0
 **PEAR removal:**
 - Removed all PEAR dependencies, code, and references
 - Removed `PEAR_LOG_DEBUG` constant and all `_isMasked()` calls from `Protocol\Client`
-- Replaced all `PEAR::isError()` calls with `\Net\NNTP\Error::isError()` throughout
+- Replaced all `PEAR::isError()` calls with `\DariusIII\NetNntp\Error::isError()` throughout
 - Removed `require_once "Log.php"` and `require_once "PEAR.php"` from demo files
 - Removed `grabPearErrors()` / `PEAR::setErrorHandling()` from demo
 - Removed `PEAR_Error` references from `Error` class
@@ -49,7 +51,7 @@ Release v4.0.0
 - Updated demo and phpdoc examples to use namespaced classes
 
 **Enums & code optimization:**
-- Created `Net\NNTP\Protocol\ResponseCode` int-backed enum with all 53 NNTP response codes
+- Created `DariusIII\NetNntp\Protocol\ResponseCode` int-backed enum with all 53 NNTP response codes
   - Each case includes a `description()` method returning the RFC description
   - Supports `ResponseCode::from(int)` and `ResponseCode::tryFrom(int)` natively
   - Added 6 new codes not previously defined: `DisconnectingRequested` (205), `DisconnectingForced` (400), `TlsContinue` (382), `TlsRefused` (580), `XgtitleFollows` (282), `XgtitleUnavailable` (481)

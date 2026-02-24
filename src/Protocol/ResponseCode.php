@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Protocol;
+namespace DariusIII\NetNntp\Protocol;
 
 /**
  * NNTP protocol response codes as defined in RFC 977, RFC 2980, RFC 3977, and RFC 4642.

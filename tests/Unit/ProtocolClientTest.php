@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Tests\Unit;
+namespace DariusIII\NetNntp\Tests\Unit;
 
-use Net\NNTP\Error;
-use Net\NNTP\Protocol\Client as ProtocolClient;
-use Net\NNTP\Protocol\ResponseCode;
+use DariusIII\NetNntp\Error;
+use DariusIII\NetNntp\Protocol\Client as ProtocolClient;
+use DariusIII\NetNntp\Protocol\ResponseCode;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

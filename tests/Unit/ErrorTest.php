@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Tests\Unit;
+namespace DariusIII\NetNntp\Tests\Unit;
 
-use Net\NNTP\Error;
+use DariusIII\NetNntp\Error;
 use PHPUnit\Framework\TestCase;
 
 final class ErrorTest extends TestCase

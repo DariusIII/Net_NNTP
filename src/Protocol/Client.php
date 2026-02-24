@@ -15,9 +15,9 @@ declare(strict_types=1);
  * @link       https://github.com/DariusIII/Net_NNTP
  */
 
-namespace Net\NNTP\Protocol;
+namespace DariusIII\NetNntp\Protocol;
 
-use Net\NNTP\Error;
+use DariusIII\NetNntp\Error;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -240,7 +240,7 @@ class Client
 
         // v1.0.x API
         if (\is_int($encryption)) {
-            trigger_error('You are using deprecated API v1.0 in Net\NNTP\Protocol\Client: connect() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Protocol\Client: connect() !', E_USER_NOTICE);
             $port = $encryption;
             $encryption = false;
         }

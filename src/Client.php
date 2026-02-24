@@ -15,14 +15,14 @@ declare(strict_types=1);
  * @link       https://github.com/DariusIII/Net_NNTP
  */
 
-namespace Net\NNTP;
+namespace DariusIII\NetNntp;
 
-use Net\NNTP\Protocol\Client as ProtocolClient;
+use DariusIII\NetNntp\Protocol\Client as ProtocolClient;
 
 /**
  * Implementation of the client side of NNTP (Network News Transfer Protocol).
  *
- * The Net\NNTP\Client class is a frontend class to the Net\NNTP\Protocol\Client class.
+ * The DariusIII\NetNntp\Client class is a frontend class to the DariusIII\NetNntp\Protocol\Client class.
  */
 class Client extends ProtocolClient
 {
@@ -44,7 +44,7 @@ class Client extends ProtocolClient
     {
         // v1.0.x API
         if (\is_int($encryption)) {
-            trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: connect() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: connect() !', E_USER_NOTICE);
             $port = $encryption;
             $encryption = null;
         }
@@ -177,7 +177,7 @@ class Client extends ProtocolClient
 
         // v1.1.x API
         if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getArticle() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getArticle() !', E_USER_NOTICE);
             $class = $implode;
             $implode = false;
 
@@ -214,7 +214,7 @@ class Client extends ProtocolClient
 
         // v1.1.x API
         if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getHeader() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getHeader() !', E_USER_NOTICE);
             $class = $implode;
             $implode = false;
 
@@ -253,7 +253,7 @@ class Client extends ProtocolClient
 
         // v1.1.x API
         if (\is_string($implode)) {
-            trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getBody() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getBody() !', E_USER_NOTICE);
             $class = $implode;
             $implode = false;
 
@@ -285,7 +285,7 @@ class Client extends ProtocolClient
     {
         // API v1.0
         if (\func_num_args() >= 4) {
-            trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: post() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: post() !', E_USER_NOTICE);
             $groups = \func_get_arg(0);
             $subject = \func_get_arg(1);
             $body = \func_get_arg(2);
@@ -462,7 +462,7 @@ class Client extends ProtocolClient
     {
         // API v1.0 compat
         if (\func_num_args() === 2 && !\is_bool(\func_get_arg(1))) {
-            trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getOverview() !', E_USER_NOTICE);
+            trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getOverview() !', E_USER_NOTICE);
 
             $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
             if (Error::isError($overview)) {
@@ -683,42 +683,42 @@ class Client extends ProtocolClient
      */
     public function isConnected(): bool
     {
-        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: isConnected() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: isConnected() !', E_USER_NOTICE);
         return parent::_isConnected();
     }
 
     /** @deprecated Use getArticle() */
     public function getArticleRaw(mixed $article, mixed $implode = false): mixed
     {
-        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getArticleRaw() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getArticleRaw() !', E_USER_NOTICE);
         return $this->getArticle($article, $implode);
     }
 
     /** @deprecated Use getHeader() */
     public function getHeaderRaw(mixed $article = null, mixed $implode = false): mixed
     {
-        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getHeaderRaw() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getHeaderRaw() !', E_USER_NOTICE);
         return $this->getHeader($article, $implode);
     }
 
     /** @deprecated Use getBody() */
     public function getBodyRaw(mixed $article = null, mixed $implode = false): mixed
     {
-        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getBodyRaw() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getBodyRaw() !', E_USER_NOTICE);
         return $this->getBody($article, $implode);
     }
 
     /** @deprecated Use getNewArticles() */
     public function getNewNews(mixed $time, string $groups = '*', ?string $distribution = null): mixed
     {
-        trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getNewNews() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.1 in DariusIII\NetNntp\Client: getNewNews() !', E_USER_NOTICE);
         return $this->getNewArticles($time, $groups, $distribution);
     }
 
     /** @deprecated Use getReferences() */
     public function getReferencesOverview(mixed $first, mixed $last): mixed
     {
-        trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getReferencesOverview() !', E_USER_NOTICE);
+        trigger_error('You are using deprecated API v1.0 in DariusIII\NetNntp\Client: getReferencesOverview() !', E_USER_NOTICE);
         return $this->getReferences($first . '-' . $last);
     }
 }

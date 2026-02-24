@@ -97,7 +97,7 @@ $breadcrumbs['group: ' . $group] = null;
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (\Net\NNTP\Error::isError($posting)) {
+if (\DariusIII\NetNntp\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
@@ -105,7 +105,7 @@ if (\Net\NNTP\Error::isError($posting)) {
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (\Net\NNTP\Error::isError($R)) {
+    if (\DariusIII\NetNntp\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -113,7 +113,7 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (\Net\NNTP\Error::isError($authenticated)) {
+    if (\DariusIII\NetNntp\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
@@ -121,7 +121,7 @@ if (!is_null($user) && !is_null($pass)) {
 
 // Select group
 $summary = $nntp->selectGroup($group);
-if (\Net\NNTP\Error::isError($summary)) {
+if (\DariusIII\NetNntp\Error::isError($summary)) {
     error($summary->getMessage());
 }
 
@@ -139,7 +139,7 @@ if (!$useRange) {
          break;
     }
     $dummy = $nntp->selectArticle($article);
-    if (\Net\NNTP\Error::isError($dummy)) {
+    if (\DariusIII\NetNntp\Error::isError($dummy)) {
         error($dummy->getMessage());
     }
 
@@ -153,7 +153,7 @@ if (!$useRange) {
         $dummy = $nntp->selectPreviousArticle();
          break;
     }
-    if (\Net\NNTP\Error::isError($dummy)) {
+    if (\DariusIII\NetNntp\Error::isError($dummy)) {
         error($dummy->getMessage());
     }
 
@@ -172,7 +172,7 @@ if (!$useRange) {
 
         // Fetch overview for currently selected article
         $overview = $nntp->getOverview();
-        if (\Net\NNTP\Error::isError($overview)) {
+        if (\DariusIII\NetNntp\Error::isError($overview)) {
             error($overview->getMessage());
         }
 
@@ -190,7 +190,7 @@ if (!$useRange) {
         } else {
             $article = $nntp->selectPreviousArticle();
         }
-        if (\Net\NNTP\Error::isError($article)) {
+        if (\DariusIII\NetNntp\Error::isError($article)) {
             error($article->getMessage());
         }
 
@@ -217,7 +217,7 @@ if (!$useRange) {
         error('bad input!');
     }
     $articles = $nntp->getOverview($range);
-    if (\Net\NNTP\Error::isError($articles)) {
+    if (\DariusIII\NetNntp\Error::isError($articles)) {
         error($articles->getMessage());
     }
 }

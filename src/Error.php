@@ -15,7 +15,7 @@ declare(strict_types=1);
  * @link       https://github.com/DariusIII/Net_NNTP
  */
 
-namespace Net\NNTP;
+namespace DariusIII\NetNntp;
 
 /**
  * Lightweight error value object.

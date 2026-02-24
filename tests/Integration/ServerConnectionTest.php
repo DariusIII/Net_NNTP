@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Net\NNTP\Tests\Integration;
+namespace DariusIII\NetNntp\Tests\Integration;
 
-use Net\NNTP\Client;
-use Net\NNTP\Error;
+use DariusIII\NetNntp\Client;
+use DariusIII\NetNntp\Error;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 

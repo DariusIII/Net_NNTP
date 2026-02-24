@@ -118,7 +118,7 @@ if ($messageID !== null) {
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (\Net\NNTP\Error::isError($posting)) {
+if (\DariusIII\NetNntp\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
@@ -126,7 +126,7 @@ if (\Net\NNTP\Error::isError($posting)) {
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (\Net\NNTP\Error::isError($R)) {
+    if (\DariusIII\NetNntp\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -134,7 +134,7 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (\Net\NNTP\Error::isError($authenticated)) {
+    if (\DariusIII\NetNntp\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
@@ -144,13 +144,13 @@ if ($messageID === null) {
 
     // Select group
     $summary = $nntp->selectGroup($group);
-    if (\Net\NNTP\Error::isError($summary)) {
+    if (\DariusIII\NetNntp\Error::isError($summary)) {
         error($summary->getMessage());
     }
 
     // Select article
     $article = $nntp->selectArticle($article);
-    if (\Net\NNTP\Error::isError($article)) {
+    if (\DariusIII\NetNntp\Error::isError($article)) {
         error($article->getMessage());
     }
 
@@ -160,7 +160,7 @@ if ($messageID === null) {
 
     // Fetch overview
     $overview = $nntp->getOverview();
-    if (\Net\NNTP\Error::isError($overview)) {
+    if (\DariusIII\NetNntp\Error::isError($overview)) {
         $logger->warning('Error fetching overview (Server response: ' . $overview->getMessage() . ')');
 
     	// 
@@ -169,7 +169,7 @@ if ($messageID === null) {
 
     // Fetch 'Newsgroups' header field
     $groups = $nntp->getHeaderField('Newsgroups');
-    if (\Net\NNTP\Error::isError($groups)) {
+    if (\DariusIII\NetNntp\Error::isError($groups)) {
         $logger->warning('Error fetching \'Newsgroups\' header field (Server response: ' . $groups->getMessage() . ')');
 
    	// 
@@ -180,7 +180,7 @@ if ($messageID === null) {
 
 // Fetch header
 $header = $nntp->getHeader($messageID);
-if (\Net\NNTP\Error::isError($header)) {
+if (\DariusIII\NetNntp\Error::isError($header)) {
     error('Error fetching header (Server response: ', $header->getMessage(), ')');
 }
 if ($header === false) {
@@ -191,7 +191,7 @@ if ($header === false) {
 
 // Fetch body
 $body = $nntp->getBody($messageID);
-if (\Net\NNTP\Error::isError($body)) {
+if (\DariusIII\NetNntp\Error::isError($body)) {
     error('Error fetching body (Server response: ', $body->getMessage(), ')');
 }
 

@@ -14,7 +14,7 @@
  <tr class="header">
   <td align="left" valign="middle"><a href="./index.php"><strong>Net_NNTP</strong></a></td>
   <td align="left" valign="middle"><h1>Net_NNTP Demo</h1></td>
-  <td align="right" valign="bottom">powered by <a href="https://github.com/DariusIII/Net_NNTP">Net_NNTP</a> v<?php echo @\Net\NNTP\Client::getPackageVersion(); ?></td>
+  <td align="right" valign="bottom">powered by <a href="https://github.com/DariusIII/Net_NNTP">Net_NNTP</a> v<?php echo @\DariusIII\NetNntp\Client::getPackageVersion(); ?></td>
  </tr>
  <tr class="subheader">
   <td colspan="3"><img src="" width="1" height="1" alt="" /></td>

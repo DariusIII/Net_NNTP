@@ -5,12 +5,12 @@
  *
  * These global constants are provided for legacy code that references
  * NET_NNTP_PROTOCOL_RESPONSECODE_* directly. New code should use the
- * Net\NNTP\Protocol\ResponseCode enum instead.
+ * DariusIII\NetNntp\Protocol\ResponseCode enum instead.
  *
- * @deprecated Use Net\NNTP\Protocol\ResponseCode enum instead.
+ * @deprecated Use DariusIII\NetNntp\Protocol\ResponseCode enum instead.
  */
 
-use Net\NNTP\Protocol\ResponseCode;
+use DariusIII\NetNntp\Protocol\ResponseCode;
 
 // Connection
 define('NET_NNTP_PROTOCOL_RESPONSECODE_READY_POSTING_ALLOWED', ResponseCode::ReadyPostingAllowed->value);

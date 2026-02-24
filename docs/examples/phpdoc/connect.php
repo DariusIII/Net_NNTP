@@ -1,4 +1,4 @@
 $posting = $nntp->connect('news.php.net');
-if (\Net\NNTP\Error::isError($posting)) {
+if (\DariusIII\NetNntp\Error::isError($posting)) {
     // handle error
 }

@@ -87,14 +87,14 @@ $breadcrumbs['Groups @ ' . ($host == null ? 'localhost' : $host)] = null;
 
 // Connect
 $posting = $nntp->connect($host, $encryption, $port);
-if (\Net\NNTP\Error::isError($posting)) {
+if (\DariusIII\NetNntp\Error::isError($posting)) {
     error('Unable to connect to NNTP server: ' . $posting->getMessage());
 }
 
 // Start TLS encryption
 if ($starttls) {
     $R = $nntp->cmdStartTLS();
-    if (\Net\NNTP\Error::isError($R)) {
+    if (\DariusIII\NetNntp\Error::isError($R)) {
         error('Unable to connect to NNTP server: ' . $R->getMessage());
     }
 }
@@ -102,20 +102,20 @@ if ($starttls) {
 // Authenticate
 if (!is_null($user) && !is_null($pass)) {
     $authenticated = $nntp->authenticate($user, $pass);
-    if (\Net\NNTP\Error::isError($authenticated)) {
+    if (\DariusIII\NetNntp\Error::isError($authenticated)) {
         error('Unable to authenticate: ' . $authenticated->getMessage());
     }
 }
 
 // Fetch list of groups
 $groups = $nntp->getGroups($wildmat);
-if (\Net\NNTP\Error::isError($groups)) {
+if (\DariusIII\NetNntp\Error::isError($groups)) {
     error('Fetching list of groups failed: ' . $groups->getMessage());
 }
 
 // Fetch known (to the server) group descriptions
 $descriptions = $nntp->getDescriptions($wildmat);
-if (\Net\NNTP\Error::isError($descriptions)) {
+if (\DariusIII\NetNntp\Error::isError($descriptions)) {
     $logger->notice('Fetching group descriptions failes: ' . $descriptions->getMessage());
 
     //
