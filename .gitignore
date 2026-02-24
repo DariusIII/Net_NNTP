@@ -4,6 +4,9 @@
 # Environment
 .env
 
+# PHPStan
+.phpstan-cache/
+
 # Composer
 /vendor/
 composer.lock

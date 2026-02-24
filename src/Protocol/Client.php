@@ -30,8 +30,12 @@ use Psr\Log\LoggerInterface;
  */
 class Client
 {
-    protected $_socket = null;
+    /** @var resource|null */
+    protected mixed $_socket = null;
+
+    /** @var array{0: int, 1: string}|null */
     protected ?array $_currentStatusResponse = null;
+
     protected ?LoggerInterface $_logger = null;
     protected ?string $_encryption = null;
 
@@ -169,6 +173,7 @@ class Client
         return $this->throwError('End of stream! Connection lost?', null);
     }
 
+    /** @param string|array<int, string> $article */
     protected function _sendArticle(string|array $article): void
     {
         if (\is_string($article)) {
@@ -185,8 +190,8 @@ class Client
         }
 
         // Array: [header, body]
-        $header = reset($article);
-        $body = next($article);
+        $header = (string) reset($article);
+        $body = (string) next($article);
 
         @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $header));
         @fwrite($this->_socket, "\r\n");
@@ -389,6 +394,7 @@ class Client
         };
     }
 
+    /** @return array{group: string, first: string, last: string, count: string} */
     private function _parseGroupSelected(): array
     {
         $parts = explode(' ', trim($this->_currentStatusResponse()));
@@ -425,6 +431,7 @@ class Client
         };
     }
 
+    /** @return array<string, mixed>|Error */
     private function _parseListgroupResponse(): array|Error
     {
         $articles = $this->_getTextResponse();
@@ -482,6 +489,7 @@ class Client
     /**
      * Parse a 223 response into [number, message-id] and log.
      */
+    /** @return array{0: string, 1: string} */
     private function _parseArticlePointer(string $logPrefix): array
     {
         $parts = explode(' ', trim($this->_currentStatusResponse()));
@@ -696,7 +704,7 @@ class Client
         return $this->_handleUnexpectedResponse($response);
     }
 
-    protected function cmdNewnews($time, mixed $newsgroups, mixed $distribution = null): mixed
+    protected function cmdNewnews(int $time, mixed $newsgroups, mixed $distribution = null): mixed
     {
         $date = gmdate('ymd His', $time);
 
@@ -785,6 +793,7 @@ class Client
         };
     }
 
+    /** @return array<string, string>|Error */
     private function _parseNewsgroupDescriptions(): array|Error
     {
         $data = $this->_getTextResponse();
@@ -807,6 +816,10 @@ class Client
 
     /**
      * Parse group list lines into associative array.
+     */
+    /**
+     * @param array<int, string> $data
+     * @return array<string, array{group: string, last: string, first: string, posting: string}>
      */
     private function _parseGroupLines(array $data): array
     {
@@ -891,6 +904,7 @@ class Client
         };
     }
 
+    /** @return array<string, bool>|Error */
     private function _parseOverviewFormat(): array|Error
     {
         $data = $this->_getTextResponse();
@@ -947,6 +961,7 @@ class Client
         };
     }
 
+    /** @return array<string, string>|Error */
     private function _parseXgtitleResponse(): array|Error
     {
         $data = $this->_getTextResponse();
@@ -1002,6 +1017,7 @@ class Client
     /**
      * Parse text response as key-value pairs (space-separated).
      */
+    /** @return array<string, string>|Error */
     private function _parseKeyValueResponse(): array|Error
     {
         $data = $this->_getTextResponse();

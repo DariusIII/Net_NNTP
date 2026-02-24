@@ -76,6 +76,17 @@ Release v3.0.0
   - Added legacy constant shim verification
   - Added `ResponseCode` autoload and namespace tests
 
+**Static analysis:**
+- Added PHPStan (`phpstan/phpstan`) as a dev dependency
+- Created `phpstan.neon` configuration at level 8 (strict)
+- All source files pass PHPStan level 8 with zero errors
+- Added proper type annotations (PHPDoc `@return`, `@param`) to all methods throughout `Protocol\Client` and `Client`
+- Typed all deprecated method parameters and return types (`getArticleRaw()`, `getHeaderRaw()`, etc.)
+- Changed `getArticle()`, `getHeader()`, `getBody()` `$implode` parameter from `bool` to `mixed` for v1.1 API backward compatibility
+- Added `@var` PHPDoc annotations to all class properties
+- Added `.phpstan-cache/` to `.gitignore`
+- Added `composer scripts`: `composer analyse`, `composer test`, `composer check`
+
 (Released: 2026-02-24)
 
 

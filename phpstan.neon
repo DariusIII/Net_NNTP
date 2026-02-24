@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src
+    tmpDir: .phpstan-cache
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        # $_socket is checked via _isConnected() before use, but PHPStan can't track that
+        - '#Parameter .* expects resource, resource\|null given#'
+        - '#Offset .* might not exist on array\{int, string\}\|null#'
+        # preg_replace can technically return null, but our patterns are always valid
+        - '#Parameter .* of function fwrite expects string, string\|null given#'

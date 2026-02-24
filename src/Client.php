@@ -26,7 +26,10 @@ use Net\NNTP\Protocol\Client as ProtocolClient;
  */
 class Client extends ProtocolClient
 {
+    /** @var array<string, mixed>|null */
     protected ?array $_selectedGroupSummary = null;
+
+    /** @var array<string, bool>|null */
     protected ?array $_overviewFormatCache = null;
 
     public function __construct()
@@ -164,9 +167,14 @@ class Client extends ProtocolClient
 
     /**
      * Fetch article (header + body).
+     *
+     * @param mixed $article Article number or message-id
+     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getArticle(mixed $article = null, bool $implode = false): mixed
+    public function getArticle(mixed $article = null, mixed $implode = false): mixed
     {
+        $class = null;
+
         // v1.1.x API
         if (\is_string($implode)) {
             trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getArticle() !', E_USER_NOTICE);
@@ -187,7 +195,7 @@ class Client extends ProtocolClient
             $data = implode("\r\n", $data);
         }
 
-        if (isset($class)) {
+        if ($class !== null) {
             return new $class($data);
         }
 
@@ -196,9 +204,14 @@ class Client extends ProtocolClient
 
     /**
      * Fetch article header.
+     *
+     * @param mixed $article Article number or message-id
+     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getHeader(mixed $article = null, bool $implode = false): mixed
+    public function getHeader(mixed $article = null, mixed $implode = false): mixed
     {
+        $class = null;
+
         // v1.1.x API
         if (\is_string($implode)) {
             trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getHeader() !', E_USER_NOTICE);
@@ -219,7 +232,7 @@ class Client extends ProtocolClient
             $data = implode("\r\n", $data);
         }
 
-        if (isset($class)) {
+        if ($class !== null) {
             return new $class($data);
         }
 
@@ -228,9 +241,16 @@ class Client extends ProtocolClient
 
     /**
      * Fetch article body.
+     *
+     * @param mixed $article Article number or message-id
+     * @param bool|string $implode When true, implode result; when string (v1.1 API), used as class name
      */
-    public function getBody(mixed $article = null, bool $implode = false): mixed
+    public function getBody(mixed $article = null, mixed $implode = false): mixed
     {
+        $class = null;
+
+        $class = null;
+
         // v1.1.x API
         if (\is_string($implode)) {
             trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getBody() !', E_USER_NOTICE);
@@ -251,7 +271,7 @@ class Client extends ProtocolClient
             $data = implode("\r\n", $data);
         }
 
-        if (isset($class)) {
+        if ($class !== null) {
             return new $class($data);
         }
 
@@ -343,6 +363,7 @@ class Client extends ProtocolClient
             return $time;
         }
 
+        assert(\is_int($time));
         return $this->cmdNewgroups($time, $distributions);
     }
 
@@ -356,6 +377,7 @@ class Client extends ProtocolClient
             return $time;
         }
 
+        assert(\is_int($time));
         return $this->cmdNewnews($time, $groups, $distribution);
     }
 
@@ -666,35 +688,35 @@ class Client extends ProtocolClient
     }
 
     /** @deprecated Use getArticle() */
-    public function getArticleRaw($article, $implode = false)
+    public function getArticleRaw(mixed $article, mixed $implode = false): mixed
     {
         trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getArticleRaw() !', E_USER_NOTICE);
         return $this->getArticle($article, $implode);
     }
 
     /** @deprecated Use getHeader() */
-    public function getHeaderRaw($article = null, $implode = false)
+    public function getHeaderRaw(mixed $article = null, mixed $implode = false): mixed
     {
         trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getHeaderRaw() !', E_USER_NOTICE);
         return $this->getHeader($article, $implode);
     }
 
     /** @deprecated Use getBody() */
-    public function getBodyRaw($article = null, $implode = false)
+    public function getBodyRaw(mixed $article = null, mixed $implode = false): mixed
     {
         trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getBodyRaw() !', E_USER_NOTICE);
         return $this->getBody($article, $implode);
     }
 
     /** @deprecated Use getNewArticles() */
-    public function getNewNews($time, $groups = '*', $distribution = null)
+    public function getNewNews(mixed $time, string $groups = '*', ?string $distribution = null): mixed
     {
         trigger_error('You are using deprecated API v1.1 in Net\NNTP\Client: getNewNews() !', E_USER_NOTICE);
         return $this->getNewArticles($time, $groups, $distribution);
     }
 
     /** @deprecated Use getReferences() */
-    public function getReferencesOverview($first, $last)
+    public function getReferencesOverview(mixed $first, mixed $last): mixed
     {
         trigger_error('You are using deprecated API v1.0 in Net\NNTP\Client: getReferencesOverview() !', E_USER_NOTICE);
         return $this->getReferences($first . '-' . $last);
