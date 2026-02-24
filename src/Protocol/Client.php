@@ -278,7 +278,7 @@ class Client
         // allows sending multiple commands and thereby making the communication between
         // NET_NNTP and the server out of sync...
         if (strpbrk($cmd, "\r\n") !== false) {
-            if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+            if ($this->_logger) {
                 $this->_logger->debug('Illegal character in command: contains carriage return/new line');
             }
 
@@ -297,7 +297,7 @@ class Client
         }
 
     	//
-    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	if ($this->_logger) {
     	    $this->_logger->debug('C: ' . $cmd);
         }
 
@@ -335,7 +335,7 @@ class Client
         }
 
     	//
-    	if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	if ($this->_logger) {
     	    $this->_logger->debug('S: ' . rtrim($response, "\r\n"));
         }
 
@@ -426,7 +426,7 @@ class Client
             }
 
     	    //
-    	    if ($debug) {
+    	    if ($this->_logger) {
     	    	$this->_logger->debug('T: ' . $line);
     	    }
 
@@ -462,7 +462,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    if ($this->_logger) {
     	        foreach (explode("\r\n", $article) as $line) {
     		    $this->_logger->debug('D: ' . $line);
     	        }
@@ -487,7 +487,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n");
 
     	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    if ($this->_logger) {
     	        foreach (explode("\r\n", $header) as $line) {
     	    	    $this->_logger->debug('D: ' . $line);
     	    	}
@@ -506,7 +506,7 @@ class Client
     	    @fwrite($this->_socket, "\r\n.\r\n");
 
     	    //
-    	    if ($this->_logger && $this->_logger->_isMasked(PEAR_LOG_DEBUG)) {
+    	    if ($this->_logger) {
     	        foreach (explode("\r\n", $body) as $line) {
     	    	    $this->_logger->debug('D: ' . $line);
     	    	}

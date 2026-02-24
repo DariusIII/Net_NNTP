@@ -259,7 +259,7 @@ class Client extends ProtocolClient
     {
 	// Select group (even if $articles is set, since many servers does not select groups when the listgroup command is run)
     	$summary = $this->cmdGroup($group);
-    	if (Net_NNTP_Error::isError($summary)) {
+    	if (Error::isError($summary)) {
     	    return $summary;
     	}
 
@@ -269,7 +269,7 @@ class Client extends ProtocolClient
 	// 
     	if ($articles !== false) {
     	    $summary2 = $this->cmdListgroup($group, ($articles === true ? null : $articles));
-    	    if (Net_NNTP_Error::isError($summary2)) {
+    	    if (Error::isError($summary2)) {
     	        return $summary2;
     	    }
 
@@ -313,7 +313,7 @@ class Client extends ProtocolClient
     {
         $response = $this->cmdLast();
 
-    	if (Net_NNTP_Error::isError($response)) {
+    	if (Error::isError($response)) {
     	    return false;
     	}
 	    
@@ -352,7 +352,7 @@ class Client extends ProtocolClient
     {
         $response = $this->cmdNext();
 
-    	if (Net_NNTP_Error::isError($response)) {
+    	if (Error::isError($response)) {
     	    return $response;
 	}
 	    
@@ -391,7 +391,7 @@ class Client extends ProtocolClient
     {
         $response = $this->cmdStat($article);
 
-    	if (Net_NNTP_Error::isError($response)) {
+    	if (Error::isError($response)) {
     	    return $response;
 	}
 	    
@@ -445,7 +445,7 @@ class Client extends ProtocolClient
     	}
 
         $data = $this->cmdArticle($article);
-        if (Net_NNTP_Error::isError($data)) {
+        if (Error::isError($data)) {
     	    return $data;
     	}
 
@@ -504,7 +504,7 @@ class Client extends ProtocolClient
     	}
 
         $data = $this->cmdHead($article);
-        if (Net_NNTP_Error::isError($data)) {
+        if (Error::isError($data)) {
     	    return $data;
     	}
 
@@ -563,7 +563,7 @@ class Client extends ProtocolClient
     	}
 
         $data = $this->cmdBody($article);
-        if (Net_NNTP_Error::isError($data)) {
+        if (Error::isError($data)) {
     	    return $data;
     	}
 
@@ -625,7 +625,7 @@ class Client extends ProtocolClient
 
     	// Check if server will receive an article
     	$post = $this->cmdPost();
-    	if (Net_NNTP_Error::isError($post)) {
+    	if (Error::isError($post)) {
     	    return $post;
     	}
 
@@ -669,7 +669,7 @@ class Client extends ProtocolClient
     {
     	// Check if server will receive an article
     	$post = $this->cmdPost();
-        if (Net_NNTP_Error::isError($post)) {
+        if (Error::isError($post)) {
     	    return $post;
     	}
 
@@ -712,7 +712,7 @@ class Client extends ProtocolClient
     public function getDate(int $format = 1): mixed
     {
         $date = $this->cmdDate();
-        if (Net_NNTP_Error::isError($date)) {
+        if (Error::isError($date)) {
     	    return $date;
     	}
 	    
@@ -835,7 +835,7 @@ case \is_integer($time):
 
     	// Get groups
     	$groups = $this->cmdListActive($wildmat);
-    	if (Net_NNTP_Error::isError($groups)) {
+    	if (Error::isError($groups)) {
     	    switch ($groups->getCode()) {
     	    	case 500:
     	    	case 501:
@@ -856,14 +856,14 @@ case \is_integer($time):
 	    
     	    // 
     	    $groups2 = $this->cmdList();
-    	    if (Net_NNTP_Error::isError($groups2)) {
+    	    if (Error::isError($groups2)) {
     		// Ignore...
     	    } else {
     	    	$groups = $groups2;
     	    }
 	}
 
-    	if (Net_NNTP_Error::isError($groups)) {
+    	if (Error::isError($groups)) {
     	    return $groups;
     	}
 
@@ -902,7 +902,7 @@ case \is_integer($time):
 
     	// Get group descriptions
     	$descriptions = $this->cmdListNewsgroups($wildmat);
-    	if (Net_NNTP_Error::isError($descriptions)) {
+    	if (Error::isError($descriptions)) {
     	    return $descriptions;
     	}
 
@@ -972,7 +972,7 @@ case \is_integer($time):
 
     	        // Fetch overview via API v1.3
     	        $overview = $this->getOverview(\func_get_arg(0) . '-' . \func_get_arg(1), true, false);
-    	        if (Net_NNTP_Error::isError($overview)) {
+    	        if (Error::isError($overview)) {
     	            return $overview;
     	        }
 
@@ -991,7 +991,7 @@ case \is_integer($time):
 
     	// Fetch overview from server
     	$overview = $this->cmdXOver($range);
-    	if (Net_NNTP_Error::isError($overview)) {
+    	if (Error::isError($overview)) {
     	    return $overview;
     	}
 
@@ -1002,7 +1002,7 @@ case \is_integer($time):
     	    if (\is_null($this->_overviewFormatCache)) {
     	    	// Fetch overview format
     	        $format = $this->getOverviewFormat($_forceNames, true);
-    	        if (Net_NNTP_Error::isError($format)){
+    	        if (Error::isError($format)){
     	            return $format;
     	        }
 
@@ -1087,7 +1087,7 @@ case \is_integer($time):
     public function getOverviewFormat(bool $_forceNames = true, bool $_full = false): mixed
     {
         $format = $this->cmdListOverviewFmt();
-    	if (Net_NNTP_Error::isError($format)) {
+    	if (Error::isError($format)) {
     	    return $format;
     	}
 
@@ -1142,7 +1142,7 @@ case \is_integer($time):
     public function getHeaderField(string $field, mixed $range = null): mixed
     {
     	$fields = $this->cmdXHdr($field, $range);
-    	if (Net_NNTP_Error::isError($fields)) {
+    	if (Error::isError($fields)) {
     	    return $fields;
     	}
 
@@ -1199,7 +1199,7 @@ case \is_integer($time):
     public function getGroupArticles(mixed $range = null): mixed
     {
         $summary = $this->cmdListgroup();
-    	if (Net_NNTP_Error::isError($summary)) {
+    	if (Error::isError($summary)) {
     	    return $summary;
     	}
 
@@ -1247,7 +1247,7 @@ case \is_integer($time):
     	$backup = false;
 
     	$references = $this->cmdXHdr('References', $range);
-    	if (Net_NNTP_Error::isError($references)) {
+    	if (Error::isError($references)) {
     	    switch ($references->getCode()) {
     	    	case 500:
     	    	case 501:
@@ -1264,14 +1264,14 @@ case \is_integer($time):
 
     	if ($backup === true) {
     	    $references2 = $this->cmdXROver($range);
-    	    if (Net_NNTP_Error::isError($references2)) {
+    	    if (Error::isError($references2)) {
     		// Ignore...
     	    } else {
     	    	$references = $references2;
     	    }
 	}
 
-    	if (Net_NNTP_Error::isError($references)) {
+    	if (Error::isError($references)) {
     	    return $references;
     	}
 
