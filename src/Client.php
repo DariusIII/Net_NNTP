@@ -369,17 +369,24 @@ class Client extends ProtocolClient
                 }
             }
 
-            foreach ($overview as $key => $article) {
-                $mapped = [];
-                for ($i = 0; $i < $fieldCount; $i++) {
-                    $value = $article[$i] ?? '';
-                    if (isset($fullIndices[$i])) {
-                        $pos = strpos($value, ':');
-                        $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
-                    }
-                    $mapped[$fieldNames[$i]] = $value;
+            if ($fullIndices === []) {
+                // Fast path: no "full" header fields — use array_combine directly
+                foreach ($overview as $key => $article) {
+                    $overview[$key] = array_combine($fieldNames, \array_slice($article, 0, $fieldCount) + array_fill(0, $fieldCount, ''));
                 }
-                $overview[$key] = $mapped;
+            } else {
+                foreach ($overview as $key => $article) {
+                    $mapped = [];
+                    for ($i = 0; $i < $fieldCount; $i++) {
+                        $value = $article[$i] ?? '';
+                        if (isset($fullIndices[$i])) {
+                            $pos = strpos($value, ':');
+                            $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
+                        }
+                        $mapped[$fieldNames[$i]] = $value;
+                    }
+                    $overview[$key] = $mapped;
+                }
             }
         }
 
@@ -500,7 +507,7 @@ class Client extends ProtocolClient
 
         if (\is_array($references)) {
             foreach ($references as $key => $val) {
-                $references[$key] = array_values(array_filter(explode(' ', trim($val)), static fn(string $s): bool => $s !== ''));
+                $references[$key] = preg_split('/\s+/', trim($val), -1, PREG_SPLIT_NO_EMPTY);
             }
         }
 

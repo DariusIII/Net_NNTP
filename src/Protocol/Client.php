@@ -114,13 +114,13 @@ class Client
             return $this->throwError('Failed to read from socket...!', null);
         }
 
-        $this->_logger?->debug('S: ' . rtrim($response, "\r\n"));
+        $response = trim($response);
 
-        $response = ltrim($response);
+        $this->_logger?->debug('S: ' . $response);
 
         $this->_currentStatusResponse = [
             (int) substr($response, 0, 3),
-            (string) rtrim(substr($response, 4)),
+            (string) substr($response, 4),
         ];
 
         return $this->_currentStatusResponse[0];
@@ -132,16 +132,18 @@ class Client
         $line = '';
         $hasEncryption = $this->_encryption !== null;
 
+        // Clear any stale OpenSSL errors once before entering the loop
+        if ($hasEncryption) {
+            $this->_clearOpensslErrors();
+        }
+
         while (!feof($this->_socket)) {
-            if ($hasEncryption) {
-                $this->_clearOpensslErrors();
-            }
             $received = @fgets($this->_socket, 8192);
-            if ($hasEncryption) {
-                $this->_clearOpensslErrors();
-            }
 
             if ($received === false) {
+                if ($hasEncryption) {
+                    $this->_clearOpensslErrors();
+                }
                 $meta = stream_get_meta_data($this->_socket);
                 if ($meta['timed_out']) {
                     return $this->throwError('Connection timed out', null);
@@ -182,7 +184,7 @@ class Client
     protected function _sendArticle(string|array $article): void
     {
         if (\is_string($article)) {
-            @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $article) . "\r\n.\r\n");
+            @fwrite($this->_socket, str_replace("\n.", "\n..", $article) . "\r\n.\r\n");
 
             if ($this->_logger) {
                 foreach (explode("\r\n", $article) as $l) {
@@ -197,7 +199,7 @@ class Client
         $header = (string) reset($article);
         $body = (string) next($article);
 
-        @fwrite($this->_socket, preg_replace("|\n\.|", "\n..", $header) . "\r\n" . preg_replace("|\n\.|", "\n..", $body) . "\r\n.\r\n");
+        @fwrite($this->_socket, str_replace("\n.", "\n..", $header) . "\r\n" . str_replace("\n.", "\n..", $body) . "\r\n.\r\n");
 
         if ($this->_logger) {
             foreach (explode("\r\n", $header) as $l) {
@@ -261,6 +263,7 @@ class Client
         $this->_logger?->info("Connection to $transport://$host:$port has been established.");
 
         stream_set_timeout($this->_socket, $timeout);
+        stream_set_read_buffer($this->_socket, 0);
 
         $response = $this->_getStatusResponse();
         if (Error::isError($response)) {
@@ -754,7 +757,7 @@ class Client
 
             $groups = [];
             foreach ($data as $line) {
-                $arr = explode(' ', trim($line));
+                $arr = explode(' ', trim($line), 4);
                 $groups[$arr[0]] = ['group' => $arr[0], 'last' => $arr[1], 'first' => $arr[2]];
             }
 
@@ -815,7 +818,7 @@ class Client
     {
         $groups = [];
         foreach ($data as $line) {
-            $arr = explode(' ', trim($line));
+            $arr = explode(' ', trim($line), 4);
             $groups[$arr[0]] = [
                 'group'   => $arr[0],
                 'last'    => $arr[1],
