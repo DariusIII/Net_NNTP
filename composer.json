@@ -1,7 +1,7 @@
 {
     "name": "dariusiii/net_nntp",
     "description": "Package for communication with NNTP/Usenet servers.",
-	"homepage": "https://github.com/DariusIII/Net_NNTP",
+    "homepage": "https://github.com/DariusIII/Net_NNTP",
     "license": "W3C",
     "type": "library",
     "authors": [
@@ -23,13 +23,9 @@
         ]
     },
     "require": {
-		"php": ">=8.5",
+        "php": ">=8.5",
         "psr/log": "^3.0",
         "vlucas/phpdotenv": "^5.6"
-        "psr/log": "^3.0",
-        "vlucas/phpdotenv": "^5.6"
-        "phpunit/phpunit": "*",
-        "phpstan/phpstan": "^2.1"
     },
     "scripts": {
         "test": "phpunit",
@@ -37,9 +33,10 @@
         "check": [
             "@analyse",
             "@test"
-        ]
-    "require-dev": {
-        "phpunit/phpunit": "*",
-        "phpstan/phpstan": "^2.1"
+        ],
+        "require-dev": {
+            "phpunit/phpunit": "*",
+            "phpstan/phpstan": "^2.1"
+        }
     }
 }
