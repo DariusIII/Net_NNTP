@@ -158,7 +158,7 @@ class Client extends ProtocolClient
             return $data;
         }
 
-        return $implode ? implode("\r\n", $data) : $data;
+        return $implode ? \implode("\r\n", $data) : $data;
     }
 
     /**
@@ -171,7 +171,7 @@ class Client extends ProtocolClient
             return $data;
         }
 
-        return $implode ? implode("\r\n", $data) : $data;
+        return $implode ? \implode("\r\n", $data) : $data;
     }
 
     /**
@@ -184,7 +184,7 @@ class Client extends ProtocolClient
             return $data;
         }
 
-        return $implode ? implode("\r\n", $data) : $data;
+        return $implode ? \implode("\r\n", $data) : $data;
     }
 
     /**
@@ -235,11 +235,11 @@ class Client extends ProtocolClient
 
         return match ($format) {
             0 => $date,
-            1 => strtotime(substr($date, 0, 8) . ' ' . substr($date, 8, 2) . ':' . substr($date, 10, 2) . ':' . substr($date, 12, 2)),
+            1 => \strtotime(\substr($date, 0, 8) . ' ' . \substr($date, 8, 2) . ':' . \substr($date, 10, 2) . ':' . \substr($date, 12, 2)),
             2 => [
-                'y' => (int) substr($date, 0, 4),
-                'm' => (int) substr($date, 4, 2),
-                'd' => (int) substr($date, 6, 2),
+                'y' => (int) \substr($date, 0, 4),
+                'm' => (int) \substr($date, 4, 2),
+                'd' => (int) \substr($date, 6, 2),
             ],
             default => $this->throwError('Invalid date format'),
         };
@@ -276,7 +276,7 @@ class Client extends ProtocolClient
             return $time;
         }
 
-        $ts = strtotime($time);
+        $ts = \strtotime($time);
         if ($ts === false) {
             throw new \InvalidArgumentException('$time could not be converted into a timestamp!');
         }
@@ -323,7 +323,7 @@ class Client extends ProtocolClient
     public function getDescriptions(mixed $wildmat = null): mixed
     {
         if (\is_array($wildmat)) {
-            $wildmat = implode(',', $wildmat);
+            $wildmat = \implode(',', $wildmat);
         }
 
         $descriptions = $this->cmdListNewsgroups($wildmat);
@@ -351,14 +351,14 @@ class Client extends ProtocolClient
                     return $format;
                 }
 
-                $format = array_merge(['Number' => false], $format);
+                $format = \array_merge(['Number' => false], $format);
                 $this->_overviewFormatCache = $format;
             } else {
                 $format = $this->_overviewFormatCache;
             }
 
-            $fieldNames = array_keys($format);
-            $fieldFlags = array_values($format);
+            $fieldNames = \array_keys($format);
+            $fieldFlags = \array_values($format);
             $fieldCount = \count($fieldNames);
 
             // Pre-compute which field indices need "full" header stripping
@@ -372,7 +372,7 @@ class Client extends ProtocolClient
             if ($fullIndices === []) {
                 // Fast path: no "full" header fields — use array_combine directly
                 foreach ($overview as $key => $article) {
-                    $overview[$key] = array_combine($fieldNames, \array_slice($article, 0, $fieldCount) + array_fill(0, $fieldCount, ''));
+                    $overview[$key] = \array_combine($fieldNames, \array_slice($article, 0, $fieldCount) + \array_fill(0, $fieldCount, ''));
                 }
             } else {
                 foreach ($overview as $key => $article) {
@@ -380,8 +380,8 @@ class Client extends ProtocolClient
                     for ($i = 0; $i < $fieldCount; $i++) {
                         $value = $article[$i] ?? '';
                         if (isset($fullIndices[$i])) {
-                            $pos = strpos($value, ':');
-                            $value = ltrim(substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
+                            $pos = \strpos($value, ':');
+                            $value = \ltrim(\substr($value, ($pos === false ? 0 : $pos + 1)), " \t");
                         }
                         $mapped[$fieldNames[$i]] = $value;
                     }
@@ -392,11 +392,11 @@ class Client extends ProtocolClient
 
         // Single article expected?
         $isSingle = $range === null
-            || (\is_string($range) && ctype_digit($range))
-            || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
+            || (\is_string($range) && \ctype_digit($range))
+            || (\is_string($range) && \str_starts_with($range, '<') && \str_ends_with($range, '>'));
 
         if ($isSingle) {
-            return \count($overview) === 0 ? false : reset($overview);
+            return \count($overview) === 0 ? false : \reset($overview);
         }
 
         return $overview;
@@ -413,8 +413,8 @@ class Client extends ProtocolClient
         }
 
         if ($_forceNames) {
-            array_splice($format, 0, 7);
-            $format = array_merge([
+            \array_splice($format, 0, 7);
+            $format = \array_merge([
                 'Subject'    => false,
                 'From'       => false,
                 'Date'       => false,
@@ -425,7 +425,7 @@ class Client extends ProtocolClient
             ], $format);
         }
 
-        return $_full ? $format : array_keys($format);
+        return $_full ? $format : \array_keys($format);
     }
 
     /**
@@ -440,15 +440,15 @@ class Client extends ProtocolClient
 
         $isSingle = $range === null
             || \is_int($range)
-            || (\is_string($range) && ctype_digit($range))
-            || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
+            || (\is_string($range) && \ctype_digit($range))
+            || (\is_string($range) && \str_starts_with($range, '<') && \str_ends_with($range, '>'));
 
         if ($isSingle && \count($fields) === 0) {
             return false;
         }
 
         if ($isSingle) {
-            return reset($fields);
+            return \reset($fields);
         }
 
         return $fields;
@@ -507,17 +507,17 @@ class Client extends ProtocolClient
 
         if (\is_array($references)) {
             foreach ($references as $key => $val) {
-                $references[$key] = preg_split('/\s+/', trim($val), -1, PREG_SPLIT_NO_EMPTY);
+                $references[$key] = \preg_split('/\s+/', \trim($val), -1, PREG_SPLIT_NO_EMPTY);
             }
         }
 
         $isSingle = $range === null
             || \is_int($range)
-            || (\is_string($range) && ctype_digit($range))
-            || (\is_string($range) && str_starts_with($range, '<') && str_ends_with($range, '>'));
+            || (\is_string($range) && \ctype_digit($range))
+            || (\is_string($range) && \str_starts_with($range, '<') && \str_ends_with($range, '>'));
 
         if ($isSingle) {
-            return \count($references) === 0 ? false : reset($references);
+            return \count($references) === 0 ? false : \reset($references);
         }
 
         return $references;

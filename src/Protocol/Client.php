@@ -70,7 +70,7 @@ class Client
             return;
         }
 
-        while (($message = openssl_error_string()) !== false) {
+        while (($message = \openssl_error_string()) !== false) {
             $this->_logger?->debug('OpenSSL: ' . $message);
         }
     }
@@ -81,7 +81,7 @@ class Client
             return $this->throwError('Failed writing to socket! (Command too long - max 510 chars)');
         }
 
-        if (strpbrk($cmd, "\r\n") !== false) {
+        if (\strpbrk($cmd, "\r\n") !== false) {
             $this->_logger?->debug('Illegal character in command: contains carriage return/new line');
             return $this->throwError('Illegal character(s) in NNTP command!');
         }
@@ -90,7 +90,7 @@ class Client
             return $this->throwError('Failed to write to socket! (connection lost!)');
         }
 
-        $written = @fwrite($this->_socket, $cmd . "\r\n");
+        $written = @\fwrite($this->_socket, $cmd . "\r\n");
         if ($written === false) {
             return $this->throwError('Failed to write to socket!');
         }
@@ -103,24 +103,24 @@ class Client
     protected function _getStatusResponse(): mixed
     {
         $this->_clearOpensslErrors();
-        $response = @fgets($this->_socket, 4096);
+        $response = @\fgets($this->_socket, 4096);
         $this->_clearOpensslErrors();
 
         if ($response === false) {
-            $meta = stream_get_meta_data($this->_socket);
+            $meta = \stream_get_meta_data($this->_socket);
             if ($meta['timed_out']) {
                 return $this->throwError('Connection timed out', null);
             }
             return $this->throwError('Failed to read from socket...!', null);
         }
 
-        $response = trim($response);
+        $response = \trim($response);
 
         $this->_logger?->debug('S: ' . $response);
 
         $this->_currentStatusResponse = [
-            (int) substr($response, 0, 3),
-            (string) substr($response, 4),
+            (int) \substr($response, 0, 3),
+            \substr($response, 4),          // substr() already returns string; cast removed
         ];
 
         return $this->_currentStatusResponse[0];
@@ -137,14 +137,14 @@ class Client
             $this->_clearOpensslErrors();
         }
 
-        while (!feof($this->_socket)) {
-            $received = @fgets($this->_socket, 8192);
+        while (!\feof($this->_socket)) {
+            $received = @\fgets($this->_socket, 8192);
 
             if ($received === false) {
                 if ($hasEncryption) {
                     $this->_clearOpensslErrors();
                 }
-                $meta = stream_get_meta_data($this->_socket);
+                $meta = \stream_get_meta_data($this->_socket);
                 if ($meta['timed_out']) {
                     return $this->throwError('Connection timed out', null);
                 }
@@ -153,11 +153,13 @@ class Client
 
             $line .= $received;
 
-            if (!str_ends_with($line, "\r\n") || \strlen($line) < 2) {
+            // str_ends_with($line, "\r\n") already implies strlen >= 2, so the
+            // redundant `|| \strlen($line) < 2` branch has been removed.
+            if (!\str_ends_with($line, "\r\n")) {
                 continue;
             }
 
-            $line = substr($line, 0, -2);
+            $line = \substr($line, 0, -2);
 
             if ($line === '.') {
                 $this->_logger?->debug('T: .');
@@ -165,8 +167,8 @@ class Client
             }
 
             // If 1st char is '.' it's doubled (NNTP/RFC977 2.4.1)
-            if (str_starts_with($line, '..')) {
-                $line = substr($line, 1);
+            if (\str_starts_with($line, '..')) {
+                $line = \substr($line, 1);
             }
 
             $this->_logger?->debug('T: ' . $line);
@@ -184,10 +186,10 @@ class Client
     protected function _sendArticle(string|array $article): void
     {
         if (\is_string($article)) {
-            @fwrite($this->_socket, str_replace("\n.", "\n..", $article) . "\r\n.\r\n");
+            @\fwrite($this->_socket, \str_replace("\n.", "\n..", $article) . "\r\n.\r\n");
 
             if ($this->_logger) {
-                foreach (explode("\r\n", $article) as $l) {
+                foreach (\explode("\r\n", $article) as $l) {
                     $this->_logger->debug('D: ' . $l);
                 }
                 $this->_logger->debug('D: .');
@@ -196,16 +198,16 @@ class Client
         }
 
         // Array: [header, body]
-        $header = (string) reset($article);
-        $body = (string) next($article);
+        $header = (string) \reset($article);
+        $body = (string) \next($article);
 
-        @fwrite($this->_socket, str_replace("\n.", "\n..", $header) . "\r\n" . str_replace("\n.", "\n..", $body) . "\r\n.\r\n");
+        @\fwrite($this->_socket, \str_replace("\n.", "\n..", $header) . "\r\n" . \str_replace("\n.", "\n..", $body) . "\r\n.\r\n");
 
         if ($this->_logger) {
-            foreach (explode("\r\n", $header) as $l) {
+            foreach (\explode("\r\n", $header) as $l) {
                 $this->_logger->debug('D: ' . $l);
             }
-            foreach (explode("\r\n", $body) as $l) {
+            foreach (\explode("\r\n", $body) as $l) {
                 $this->_logger->debug('D: ' . $l);
             }
             $this->_logger->debug('D: .');
@@ -253,7 +255,7 @@ class Client
 
         $timeout ??= 15;
 
-        $R = @stream_socket_client("$transport://$host:$port", $errno, $errstr, $timeout);
+        $R = @\stream_socket_client("$transport://$host:$port", $errno, $errstr, $timeout);
         if ($R === false) {
             $this->_logger?->notice("Connection to $transport://$host:$port failed.");
             return $R;
@@ -262,8 +264,8 @@ class Client
         $this->_socket = $R;
         $this->_logger?->info("Connection to $transport://$host:$port has been established.");
 
-        stream_set_timeout($this->_socket, $timeout);
-        stream_set_read_buffer($this->_socket, 0);
+        \stream_set_timeout($this->_socket, $timeout);
+        \stream_set_read_buffer($this->_socket, 0);
 
         $response = $this->_getStatusResponse();
         if (Error::isError($response)) {
@@ -331,7 +333,7 @@ class Client
 
         if ($response === ResponseCode::DisconnectingRequested->value) {
             if ($this->_isConnected()) {
-                fclose($this->_socket);
+                \fclose($this->_socket);
             }
             $this->_logger?->info('Connection closed.');
             return true;
@@ -356,7 +358,7 @@ class Client
 
     private function _handleTlsNegotiation(int $response): mixed
     {
-        $encrypted = stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+        $encrypted = \stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
 
         if ($encrypted === true) {
             $this->_logger?->info('TLS encryption started.');
@@ -390,7 +392,7 @@ class Client
     /** @return array{group: string, first: string, last: string, count: string} */
     private function _parseGroupSelected(): array
     {
-        $parts = explode(' ', trim($this->_currentStatusResponse()));
+        $parts = \explode(' ', \trim($this->_currentStatusResponse()));
         $this->_logger?->info('Group selected: ' . $parts[3]);
 
         return [
@@ -432,9 +434,9 @@ class Client
             return $articles;
         }
 
-        $parts = explode(' ', trim($this->_currentStatusResponse()), 4);
+        $parts = \explode(' ', \trim($this->_currentStatusResponse()), 4);
 
-        if (!is_numeric($parts[0]) || !is_numeric($parts[1]) || !is_numeric($parts[2]) || empty($parts[3])) {
+        if (!\is_numeric($parts[0]) || !\is_numeric($parts[1]) || !\is_numeric($parts[2]) || empty($parts[3])) {
             return ['group' => null, 'first' => null, 'last' => null, 'count' => null, 'articles' => $articles];
         }
 
@@ -485,7 +487,7 @@ class Client
     /** @return array{0: string, 1: string} */
     private function _parseArticlePointer(string $logPrefix): array
     {
-        $parts = explode(' ', trim($this->_currentStatusResponse()));
+        $parts = \explode(' ', \trim($this->_currentStatusResponse()));
         $this->_logger?->info("$logPrefix: {$parts[0]} - {$parts[1]}");
         return [$parts[0], (string) $parts[1]];
     }
@@ -675,7 +677,7 @@ class Client
 
     protected function cmdNewgroups(int $time, ?string $distributions = null): mixed
     {
-        $date = gmdate('ymd His', $time);
+        $date = \gmdate('ymd His', $time);
         $command = $distributions === null
             ? "NEWGROUPS $date GMT"
             : "NEWGROUPS $date GMT <$distributions>";
@@ -698,15 +700,15 @@ class Client
 
     protected function cmdNewnews(int $time, mixed $newsgroups, mixed $distribution = null): mixed
     {
-        $date = gmdate('ymd His', $time);
+        $date = \gmdate('ymd His', $time);
 
         if (\is_array($newsgroups)) {
-            $newsgroups = implode(',', $newsgroups);
+            $newsgroups = \implode(',', $newsgroups);
         }
 
         $command = $distribution === null
             ? "NEWNEWS $newsgroups $date GMT"
-            : 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT <' . (\is_array($distribution) ? implode(',', $distribution) : $distribution) . '>';
+            : 'NEWNEWS ' . $newsgroups . ' ' . $date . ' GMT <' . (\is_array($distribution) ? \implode(',', $distribution) : $distribution) . '>';
 
         $response = $this->_sendCommand($command);
         if (Error::isError($response)) {
@@ -757,7 +759,7 @@ class Client
 
             $groups = [];
             foreach ($data as $line) {
-                $arr = explode(' ', trim($line), 4);
+                $arr = \explode(' ', \trim($line), 4);
                 $groups[$arr[0]] = ['group' => $arr[0], 'last' => $arr[1], 'first' => $arr[2]];
             }
 
@@ -794,8 +796,8 @@ class Client
 
         $groups = [];
         foreach ($data as $line) {
-            $line = ltrim($line);
-            $parts = explode(' ', $line, 2);
+            $line = \ltrim($line);
+            $parts = \explode(' ', $line, 2);
             if ($parts[0] !== '' && isset($parts[1])) {
                 $groups[$parts[0]] = $parts[1];
             } else {
@@ -818,7 +820,7 @@ class Client
     {
         $groups = [];
         foreach ($data as $line) {
-            $arr = explode(' ', trim($line), 4);
+            $arr = \explode(' ', \trim($line), 4);
             $groups[$arr[0]] = [
                 'group'   => $arr[0],
                 'last'    => $arr[1],
@@ -876,7 +878,7 @@ class Client
         }
 
         foreach ($data as $key => $value) {
-            $data[$key] = explode("\t", $value);
+            $data[$key] = \explode("\t", $value);
         }
 
         $this->_logger?->info('Fetched overview ' . ($range === null ? 'for current article' : "for range: $range"));
@@ -907,10 +909,10 @@ class Client
 
         $format = [];
         foreach ($data as $line) {
-            if (strcasecmp(substr($line, -5, 5), ':full') === 0) {
-                $format[substr($line, 0, -5)] = true;
+            if (\strcasecmp(\substr($line, -5, 5), ':full') === 0) {
+                $format[\substr($line, 0, -5)] = true;
             } else {
-                $format[substr($line, 0, -1)] = false;
+                $format[\substr($line, 0, -1)] = false;
             }
         }
 
@@ -964,7 +966,7 @@ class Client
 
         $groups = [];
         foreach ($data as $line) {
-            $parts = explode(' ', trim($line), 2);
+            $parts = \explode(' ', \trim($line), 2);
             if (isset($parts[1])) {
                 $groups[$parts[0]] = $parts[1];
             }
@@ -993,7 +995,7 @@ class Client
     protected function cmdXPat(string $field, string $range, mixed $wildmat): mixed
     {
         if (\is_array($wildmat)) {
-            $wildmat = implode(' ', $wildmat);
+            $wildmat = \implode(' ', $wildmat);
         }
 
         $response = $this->_sendCommand("XPAT $field $range $wildmat");
@@ -1022,7 +1024,7 @@ class Client
 
         $result = [];
         foreach ($data as $line) {
-            $parts = explode(' ', trim($line), 2);
+            $parts = \explode(' ', \trim($line), 2);
             $result[$parts[0]] = $parts[1];
         }
         return $result;
@@ -1065,7 +1067,7 @@ class Client
 
     protected function _isConnected(): bool
     {
-        return \is_resource($this->_socket) && !feof($this->_socket);
+        return \is_resource($this->_socket) && !\feof($this->_socket);
     }
 }
 
