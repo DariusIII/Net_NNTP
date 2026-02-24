@@ -1,4 +1,4 @@
-Release v3.0.0
+Release v4.0.0
 ----------------
 
 **Project structure & namespaces:**
